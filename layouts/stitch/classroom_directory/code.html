@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Classrooms Management - Scholastic Curator</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "error": "#9f403d",
+              "primary-fixed-dim": "#c3d4ff",
+              "outline-variant": "#87b5f0",
+              "on-tertiary-fixed-variant": "#514e69",
+              "on-secondary-fixed": "#3e3f45",
+              "on-primary-fixed": "#003c87",
+              "on-secondary-container": "#505157",
+              "on-error-container": "#752121",
+              "error-container": "#fe8983",
+              "on-error": "#fff7f6",
+              "surface-tint": "#005ac3",
+              "surface-container-lowest": "#ffffff",
+              "secondary-container": "#e2e2e9",
+              "on-tertiary": "#fcf7ff",
+              "error-dim": "#4e0309",
+              "on-tertiary-container": "#47445f",
+              "on-primary": "#f7f7ff",
+              "secondary-dim": "#525359",
+              "primary": "#005ac3",
+              "tertiary-dim": "#53506b",
+              "surface-bright": "#f8f9ff",
+              "surface": "#f8f9ff",
+              "secondary-fixed-dim": "#d4d4db",
+              "inverse-primary": "#4e8eff",
+              "primary-container": "#d8e2ff",
+              "primary-fixed": "#d8e2ff",
+              "outline": "#4f7db5",
+              "on-tertiary-fixed": "#34314b",
+              "surface-container": "#e6eeff",
+              "on-surface": "#00345e",
+              "surface-variant": "#d3e4ff",
+              "tertiary-fixed": "#d3ceef",
+              "background": "#f8f9ff",
+              "on-primary-fixed-variant": "#0057be",
+              "surface-container-low": "#eff4ff",
+              "inverse-on-surface": "#8f9eb4",
+              "tertiary-fixed-dim": "#c5c0e0",
+              "secondary-fixed": "#e2e2e9",
+              "surface-dim": "#c4dcff",
+              "surface-container-high": "#dce9ff",
+              "tertiary": "#5f5c78",
+              "on-background": "#00345e",
+              "on-secondary": "#f9f8ff",
+              "inverse-surface": "#010f20",
+              "tertiary-container": "#d3ceef",
+              "on-secondary-fixed-variant": "#5a5b61",
+              "on-primary-container": "#004eab",
+              "surface-container-highest": "#d3e4ff",
+              "secondary": "#5e5f65",
+              "on-surface-variant": "#306197",
+              "primary-dim": "#004eac"
+            },
+            fontFamily: {
+              "headline": ["Inter"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body { font-family: 'Inter', sans-serif; }
+        .glass-panel {
+            backdrop-filter: blur(20px);
+            background-color: rgba(211, 228, 255, 0.8);
+        }
+        .primary-gradient {
+            background: linear-gradient(145deg, #005ac3 0%, #004eac 100%);
+        }
+        .ghost-border {
+            border: 1px solid rgba(79, 125, 181, 0.15);
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface antialiased">
+<!-- SideNavBar -->
+<aside class="h-screen w-64 fixed left-0 top-0 border-r-0 bg-slate-50 dark:bg-slate-900 flex flex-col py-6 px-4 font-inter antialiased text-sm font-medium z-50">
+<div class="flex items-center gap-3 mb-10 px-2">
+<div class="w-10 h-10 rounded shadow-sm flex items-center justify-center bg-primary text-on-primary">
+<span class="material-symbols-outlined" data-icon="account_balance">account_balance</span>
+</div>
+<div>
+<h1 class="text-lg font-bold tracking-tight text-slate-900 dark:text-slate-50 leading-tight">Scholastic Curator</h1>
+<p class="text-[10px] uppercase tracking-widest text-slate-500">Admin Portal</p>
+</div>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span>Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="group">group</span>
+<span>Users</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="book">book</span>
+<span>Courses</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-blue-700 dark:text-blue-400 font-semibold border-r-2 border-blue-700 dark:border-blue-400 bg-blue-50/50 dark:bg-blue-900/20 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="room">room</span>
+<span>Classrooms</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="calendar_month">calendar_month</span>
+<span>Schedules</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span>Settings</span>
+</a>
+</nav>
+<div class="mt-auto px-2">
+<button class="w-full primary-gradient text-on-primary py-3 px-4 rounded font-semibold text-sm shadow-lg shadow-primary/20 flex items-center justify-center gap-2 active:scale-[0.98] transition-transform">
+<span class="material-symbols-outlined text-sm" data-icon="add">add</span>
+                New Registration
+            </button>
+</div>
+</aside>
+<!-- TopAppBar -->
+<header class="fixed top-0 right-0 w-[calc(100%-16rem)] h-16 z-40 bg-white/80 dark:bg-slate-950/80 backdrop-blur-xl border-b border-slate-200/50 dark:border-slate-800/50 flex justify-between items-center px-8 shadow-sm dark:shadow-none font-inter text-sm font-medium uppercase tracking-wider">
+<div class="flex items-center gap-6">
+<div class="relative group">
+<span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+<span class="material-symbols-outlined text-lg" data-icon="search">search</span>
+</span>
+<input class="bg-surface-container-low border-none rounded py-2 pl-10 pr-4 w-64 focus:ring-2 focus:ring-blue-500/20 text-xs tracking-normal placeholder:text-slate-400" placeholder="Search resources..." type="text"/>
+</div>
+<nav class="flex gap-8">
+<a class="text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-300 transition-all" href="#">Analytics</a>
+<a class="text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-300 transition-all" href="#">Reports</a>
+<a class="text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-300 transition-all" href="#">Logs</a>
+</nav>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-4 text-slate-500">
+<button class="hover:text-blue-600 transition-colors"><span class="material-symbols-outlined" data-icon="notifications">notifications</span></button>
+<button class="hover:text-blue-600 transition-colors"><span class="material-symbols-outlined" data-icon="help_outline">help_outline</span></button>
+</div>
+<div class="h-8 w-[1px] bg-slate-200"></div>
+<div class="flex items-center gap-3">
+<span class="text-[10px] text-right">
+<div class="font-bold text-slate-900">Admin_User</div>
+<div class="text-slate-400 uppercase tracking-tighter">Super Admin</div>
+</span>
+<img class="w-10 h-10 rounded-full ghost-border object-cover" data-alt="close-up portrait of a professional male administrator in a modern office setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBCJQyJwP1GkjyYDit-2xnxjKmddWEHLnfWRaFr_Gn8igGDLGIaKgP7vbYRwfBE6TVOPnQEQzlrJ-4zDMdu-REEE_NRavjXcvTcOS_SW_Z5_Vw2hiYIMZoWXyWlfrJW2-M0t5Y3_HlFWUeU_VrAOGH8_0hcXsmSgtPgnpLtb5hKV7R-GMpbLm3WW0-bR4Ojk6tyO0gaVFje8VoP8PXaFPy0UJg4hzgqy7UQ2iJWZ500ccKeqiFV-VkPsznLih7HkPBLtDD7vGGBZw4"/>
+</div>
+</div>
+</header>
+<!-- Main Content -->
+<main class="ml-64 pt-16 min-h-screen bg-surface p-8">
+<div class="max-w-7xl mx-auto">
+<!-- Page Header -->
+<div class="flex justify-between items-end mb-10">
+<div>
+<h2 class="text-4xl font-extrabold tracking-tight text-on-surface mb-2">Classrooms</h2>
+<p class="text-secondary body-md">Manage university facilities, physical capacity, and resource allocation status.</p>
+</div>
+<div class="flex gap-3">
+<button class="bg-surface-container-highest ghost-border px-5 py-2.5 rounded text-sm font-semibold flex items-center gap-2 hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined text-sm" data-icon="filter_list">filter_list</span>
+                        Filter
+                    </button>
+<button class="primary-gradient text-on-primary px-6 py-2.5 rounded text-sm font-semibold flex items-center gap-2 shadow-lg shadow-primary/20 active:scale-95 transition-all">
+<span class="material-symbols-outlined text-sm" data-icon="add">add</span>
+                        New Classroom
+                    </button>
+</div>
+</div>
+<!-- Dashboard Stats Bento -->
+<div class="grid grid-cols-12 gap-6 mb-10">
+<div class="col-span-4 bg-surface-container-lowest p-6 rounded-xl ghost-border">
+<div class="flex justify-between items-start mb-4">
+<div class="p-2 bg-primary-container text-on-primary-container rounded">
+<span class="material-symbols-outlined" data-icon="meeting_room">meeting_room</span>
+</div>
+<span class="text-xs font-bold text-green-600 bg-green-50 px-2 py-1 rounded">+3 New</span>
+</div>
+<div class="text-3xl font-extrabold text-on-surface">142</div>
+<div class="text-xs uppercase tracking-widest text-secondary mt-1 font-bold">Total Classrooms</div>
+</div>
+<div class="col-span-4 bg-surface-container-lowest p-6 rounded-xl ghost-border">
+<div class="flex justify-between items-start mb-4">
+<div class="p-2 bg-tertiary-container text-on-tertiary-container rounded">
+<span class="material-symbols-outlined" data-icon="groups">groups</span>
+</div>
+<span class="text-xs font-bold text-secondary-dim bg-secondary-container px-2 py-1 rounded">84% Util</span>
+</div>
+<div class="text-3xl font-extrabold text-on-surface">4,850</div>
+<div class="text-xs uppercase tracking-widest text-secondary mt-1 font-bold">Total Capacity</div>
+</div>
+<div class="col-span-4 bg-surface-container-lowest p-6 rounded-xl ghost-border border-l-4 border-l-primary">
+<div class="flex justify-between items-start mb-4">
+<div class="p-2 bg-secondary-container text-on-secondary-container rounded">
+<span class="material-symbols-outlined" data-icon="construction">construction</span>
+</div>
+</div>
+<div class="text-3xl font-extrabold text-on-surface">12</div>
+<div class="text-xs uppercase tracking-widest text-secondary mt-1 font-bold">Under Maintenance</div>
+</div>
+</div>
+<!-- Data Table Section -->
+<div class="bg-surface-container-lowest rounded-xl overflow-hidden ghost-border">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low border-b border-outline-variant/10">
+<th class="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">ID_CLASSROOM</th>
+<th class="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">N_CLASSROOM</th>
+<th class="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">TYPE</th>
+<th class="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">CAPACITY</th>
+<th class="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">ID_STATUS</th>
+<th class="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-on-surface-variant text-right">ACTIONS</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/5">
+<tr class="hover:bg-surface-container-low/50 transition-colors group">
+<td class="px-6 py-5 font-mono text-xs text-secondary">#CR-4029</td>
+<td class="px-6 py-5">
+<span class="font-bold text-on-surface block">Auditorium Maxwell</span>
+<span class="text-[11px] text-secondary">Science Block, 4th Floor</span>
+</td>
+<td class="px-6 py-5">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded-full bg-surface-container-high flex items-center justify-center ghost-border">
+<span class="material-symbols-outlined text-sm text-primary" data-icon="theater_comedy">theater_comedy</span>
+</div>
+<span class="text-sm font-medium">Lecture Hall</span>
+</div>
+</td>
+<td class="px-6 py-5">
+<span class="text-sm font-bold text-on-surface">350</span>
+<span class="text-[11px] text-secondary ml-1">Seats</span>
+</td>
+<td class="px-6 py-5">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-green-100 text-green-700">
+<span class="w-1.5 h-1.5 rounded-full bg-green-500"></span>
+                                    AVAILABLE
+                                </span>
+</td>
+<td class="px-6 py-5 text-right">
+<button class="text-secondary opacity-0 group-hover:opacity-100 hover:text-primary transition-all">
+<span class="material-symbols-outlined" data-icon="more_vert">more_vert</span>
+</button>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-low/50 transition-colors group">
+<td class="px-6 py-5 font-mono text-xs text-secondary">#CR-1102</td>
+<td class="px-6 py-5">
+<span class="font-bold text-on-surface block">Bio-Tech Lab 3</span>
+<span class="text-[11px] text-secondary">Main Annex, Ground Floor</span>
+</td>
+<td class="px-6 py-5">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded-full bg-surface-container-high flex items-center justify-center ghost-border">
+<span class="material-symbols-outlined text-sm text-primary" data-icon="biotech">biotech</span>
+</div>
+<span class="text-sm font-medium">Laboratory</span>
+</div>
+</td>
+<td class="px-6 py-5">
+<span class="text-sm font-bold text-on-surface">45</span>
+<span class="text-[11px] text-secondary ml-1">Stations</span>
+</td>
+<td class="px-6 py-5">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-slate-100 text-slate-600">
+<span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
+                                    OCCUPIED
+                                </span>
+</td>
+<td class="px-6 py-5 text-right">
+<button class="text-secondary opacity-0 group-hover:opacity-100 hover:text-primary transition-all">
+<span class="material-symbols-outlined" data-icon="more_vert">more_vert</span>
+</button>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-low/50 transition-colors group">
+<td class="px-6 py-5 font-mono text-xs text-secondary">#CR-9210</td>
+<td class="px-6 py-5">
+<span class="font-bold text-on-surface block">Seminar Room B</span>
+<span class="text-[11px] text-secondary">Library West Wing</span>
+</td>
+<td class="px-6 py-5">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded-full bg-surface-container-high flex items-center justify-center ghost-border">
+<span class="material-symbols-outlined text-sm text-primary" data-icon="co_present">co_present</span>
+</div>
+<span class="text-sm font-medium">Seminar</span>
+</div>
+</td>
+<td class="px-6 py-5">
+<span class="text-sm font-bold text-on-surface">25</span>
+<span class="text-[11px] text-secondary ml-1">Seats</span>
+</td>
+<td class="px-6 py-5">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-green-100 text-green-700">
+<span class="w-1.5 h-1.5 rounded-full bg-green-500"></span>
+                                    AVAILABLE
+                                </span>
+</td>
+<td class="px-6 py-5 text-right">
+<button class="text-secondary opacity-0 group-hover:opacity-100 hover:text-primary transition-all">
+<span class="material-symbols-outlined" data-icon="more_vert">more_vert</span>
+</button>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-low/50 transition-colors group">
+<td class="px-6 py-5 font-mono text-xs text-secondary">#CR-3005</td>
+<td class="px-6 py-5">
+<span class="font-bold text-on-surface block">Computer Studio 1</span>
+<span class="text-[11px] text-secondary">Engineering Wing</span>
+</td>
+<td class="px-6 py-5">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded-full bg-surface-container-high flex items-center justify-center ghost-border">
+<span class="material-symbols-outlined text-sm text-primary" data-icon="computer">computer</span>
+</div>
+<span class="text-sm font-medium">Digital Studio</span>
+</div>
+</td>
+<td class="px-6 py-5">
+<span class="text-sm font-bold text-on-surface">60</span>
+<span class="text-[11px] text-secondary ml-1">Desks</span>
+</td>
+<td class="px-6 py-5">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-amber-50 text-amber-700 border border-amber-200">
+<span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+                                    MAINTENANCE
+                                </span>
+</td>
+<td class="px-6 py-5 text-right">
+<button class="text-secondary opacity-0 group-hover:opacity-100 hover:text-primary transition-all">
+<span class="material-symbols-outlined" data-icon="more_vert">more_vert</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="px-6 py-4 bg-surface-container-low flex justify-between items-center text-xs font-bold text-secondary">
+<span>Showing 4 of 142 Classrooms</span>
+<div class="flex gap-2">
+<button class="px-3 py-1 ghost-border rounded bg-surface text-slate-400 cursor-not-allowed">Previous</button>
+<button class="px-3 py-1 ghost-border rounded bg-white hover:bg-primary-container hover:text-on-primary-container transition-colors">Next</button>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Sleek Modal Overlay (Asymmetric Right Center Placement) -->
+<div class="fixed inset-0 z-50 flex items-center justify-end pr-8 pointer-events-none">
+<div class="w-[450px] bg-white rounded-xl shadow-2xl border border-outline-variant/10 pointer-events-auto p-0 flex flex-col max-h-[921px]">
+<div class="p-8 border-b border-outline-variant/5">
+<div class="flex justify-between items-center mb-6">
+<h3 class="text-2xl font-extrabold tracking-tight text-on-surface">New Classroom</h3>
+<button class="text-secondary hover:text-on-surface"><span class="material-symbols-outlined" data-icon="close">close</span></button>
+</div>
+<div class="space-y-6">
+<div>
+<label class="block text-[10px] font-bold uppercase tracking-widest text-secondary mb-2">N_CLASSROOM</label>
+<input class="w-full bg-surface-container-low border-none rounded py-3 px-4 focus:ring-2 focus:ring-blue-500/20 text-sm" placeholder="e.g. Einstein Seminar Room" type="text"/>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div>
+<label class="block text-[10px] font-bold uppercase tracking-widest text-secondary mb-2">CAPACITY</label>
+<div class="relative">
+<input class="w-full bg-surface-container-low border-none rounded py-3 px-4 focus:ring-2 focus:ring-blue-500/20 text-sm" placeholder="0" type="number"/>
+<span class="absolute right-3 top-3 text-[10px] text-secondary font-bold">SEATS</span>
+</div>
+</div>
+<div>
+<label class="block text-[10px] font-bold uppercase tracking-widest text-secondary mb-2">CLASSROOM TYPE</label>
+<select class="w-full bg-surface-container-low border-none rounded py-3 px-4 focus:ring-2 focus:ring-blue-500/20 text-sm appearance-none">
+<option>Lecture Hall</option>
+<option>Laboratory</option>
+<option>Seminar Room</option>
+<option>Computer Lab</option>
+</select>
+</div>
+</div>
+<div>
+<label class="block text-[10px] font-bold uppercase tracking-widest text-secondary mb-2">LOCATION / BUILDING</label>
+<div class="relative">
+<span class="absolute left-3 top-3.5 text-secondary">
+<span class="material-symbols-outlined text-sm" data-icon="location_on">location_on</span>
+</span>
+<input class="w-full bg-surface-container-low border-none rounded py-3 pl-10 pr-4 focus:ring-2 focus:ring-blue-500/20 text-sm" placeholder="e.g. Science Wing, Level 2" type="text"/>
+</div>
+</div>
+<div class="bg-blue-50/50 p-4 rounded border border-blue-100/50">
+<div class="flex gap-3">
+<span class="material-symbols-outlined text-blue-600" data-icon="info">info</span>
+<p class="text-[11px] leading-relaxed text-blue-800">New classroom registrations will automatically be set to <span class="font-bold">AVAILABLE</span> status unless scheduled otherwise by the Registrar.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="p-8 mt-auto flex gap-3 bg-surface-container-low">
+<button class="flex-1 bg-white ghost-border py-3 rounded text-sm font-bold text-on-surface hover:bg-slate-50 transition-all">Save as Draft</button>
+<button class="flex-1 primary-gradient text-on-primary py-3 rounded text-sm font-bold shadow-lg shadow-primary/20 hover:opacity-90 transition-all">Create Classroom</button>
+</div>
+</div>
+</div>
+</body></html>

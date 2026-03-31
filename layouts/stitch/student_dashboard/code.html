@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Dashboard | Scholastic Curator</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-secondary-fixed-variant": "#5a5b61",
+              "primary-container": "#d8e2ff",
+              "on-tertiary-fixed": "#34314b",
+              "on-primary-fixed-variant": "#0057be",
+              "tertiary": "#5f5c78",
+              "surface-variant": "#d3e4ff",
+              "inverse-surface": "#010f20",
+              "on-secondary": "#f9f8ff",
+              "surface-container-lowest": "#ffffff",
+              "on-tertiary-fixed-variant": "#514e69",
+              "secondary-dim": "#525359",
+              "secondary-fixed-dim": "#d4d4db",
+              "tertiary-dim": "#53506b",
+              "secondary": "#5e5f65",
+              "on-surface": "#00345e",
+              "on-error-container": "#752121",
+              "primary-dim": "#004eac",
+              "surface-container-low": "#eff4ff",
+              "outline-variant": "#87b5f0",
+              "on-primary": "#f7f7ff",
+              "surface-bright": "#f8f9ff",
+              "inverse-on-surface": "#8f9eb4",
+              "on-error": "#fff7f6",
+              "error": "#9f403d",
+              "secondary-container": "#e2e2e9",
+              "error-dim": "#4e0309",
+              "outline": "#4f7db5",
+              "on-tertiary-container": "#47445f",
+              "on-tertiary": "#fcf7ff",
+              "tertiary-fixed-dim": "#c5c0e0",
+              "on-primary-fixed": "#003c87",
+              "on-surface-variant": "#306197",
+              "surface-container": "#e6eeff",
+              "background": "#f8f9ff",
+              "tertiary-container": "#d3ceef",
+              "surface-container-high": "#dce9ff",
+              "on-primary-container": "#004eab",
+              "primary": "#005ac3",
+              "on-secondary-container": "#505157",
+              "on-secondary-fixed": "#3e3f45",
+              "surface-tint": "#005ac3",
+              "secondary-fixed": "#e2e2e9",
+              "error-container": "#fe8983",
+              "primary-fixed-dim": "#c3d4ff",
+              "surface": "#f8f9ff",
+              "surface-dim": "#c4dcff",
+              "inverse-primary": "#4e8eff",
+              "on-background": "#00345e",
+              "tertiary-fixed": "#d3ceef",
+              "surface-container-highest": "#d3e4ff",
+              "primary-fixed": "#d8e2ff"
+            },
+            fontFamily: {
+              "headline": ["Inter"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-surface text-on-surface antialiased flex overflow-hidden">
+<!-- SideNavBar Component -->
+<aside class="h-screen w-64 fixed left-0 top-0 bg-slate-50 flex flex-col p-4 space-y-2 font-sans text-sm font-medium antialiased z-40">
+<div class="text-lg font-black tracking-tight text-blue-900 mb-8 px-4">
+            Scholastic Curator
+        </div>
+<!-- User Profile Section -->
+<div class="px-4 mb-8 flex items-center gap-3">
+<img class="w-10 h-10 rounded-full outline-variant" data-alt="Close-up portrait of a young male student with glasses in a library setting, soft natural lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCuYnPyPVsXR6cHVsJaGiwO7NsAkh1mVn8SHcgvLvCGe-9bv2LZMW77mGEaIs6QV4TYtM7pT1gQGW7Q_8lMLixyhBEFGcmRJBDIY7D6H16Ih03KYW24fuxwsStE_0vlDYcsRKHTSSAS3JpZSLGJs02mWX13iQf3Kxp1rncQkGSUh8fKTG9z_tYHMmz0XACYrf3c427IxInusJOb2LVTLIhFt4U7uDeeBn2Too3eshmMkxCji1PN60-HjIrEYr4NuKNfU4vxNuzns1s" style="border: 1px solid rgba(135, 181, 240, 0.15)"/>
+<div class="flex flex-col">
+<span class="text-on-surface font-bold text-sm">Alex Rivers</span>
+<span class="text-slate-500 text-[10px] uppercase tracking-wider font-bold">Student | ID: 20240912</span>
+</div>
+</div>
+<!-- Navigation Links -->
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-4 py-2.5 text-blue-700 font-bold bg-white rounded-lg shadow-sm active:scale-98 transition-all duration-200" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+                Dashboard
+            </a>
+<a class="flex items-center gap-3 px-4 py-2.5 text-slate-500 hover:bg-slate-200/50 hover:pl-6 rounded-lg transition-all duration-200" href="#">
+<span class="material-symbols-outlined">auto_stories</span>
+                My Courses
+            </a>
+<a class="flex items-center gap-3 px-4 py-2.5 text-slate-500 hover:bg-slate-200/50 hover:pl-6 rounded-lg transition-all duration-200" href="#">
+<span class="material-symbols-outlined">history_edu</span>
+                Academic History
+            </a>
+<a class="flex items-center gap-3 px-4 py-2.5 text-slate-500 hover:bg-slate-200/50 hover:pl-6 rounded-lg transition-all duration-200" href="#">
+<span class="material-symbols-outlined">calendar_today</span>
+                Schedules
+            </a>
+<a class="flex items-center gap-3 px-4 py-2.5 text-slate-500 hover:bg-slate-200/50 hover:pl-6 rounded-lg transition-all duration-200" href="#">
+<span class="material-symbols-outlined">payments</span>
+                Financials
+            </a>
+<a class="flex items-center gap-3 px-4 py-2.5 text-slate-500 hover:bg-slate-200/50 hover:pl-6 rounded-lg transition-all duration-200" href="#">
+<span class="material-symbols-outlined">local_library</span>
+                Library
+            </a>
+</nav>
+<!-- Footer Actions -->
+<div class="pt-4 border-t border-slate-200/50 space-y-1">
+<a class="flex items-center gap-3 px-4 py-2.5 text-slate-500 hover:bg-slate-200/50 hover:pl-6 rounded-lg transition-all duration-200" href="#">
+<span class="material-symbols-outlined">support_agent</span>
+                Support Portal
+            </a>
+<a class="flex items-center gap-3 px-4 py-2.5 text-slate-500 hover:bg-slate-200/50 hover:pl-6 rounded-lg transition-all duration-200" href="#">
+<span class="material-symbols-outlined">settings</span>
+                Settings
+            </a>
+<a class="flex items-center gap-3 px-4 py-2.5 text-error-dim hover:bg-error-container/10 hover:pl-6 rounded-lg transition-all duration-200" href="#">
+<span class="material-symbols-outlined">logout</span>
+                Sign Out
+            </a>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="ml-64 flex-1 h-screen overflow-y-auto bg-surface">
+<!-- Top Navigation (Shell Implementation) -->
+<header class="fixed top-0 right-0 left-64 bg-white/80 backdrop-blur-md h-16 flex justify-between items-center px-8 z-30 border-b border-slate-200/50">
+<div class="flex items-center gap-8">
+<h1 class="text-xl font-extrabold tracking-tighter text-blue-800">Dashboard</h1>
+<nav class="hidden md:flex gap-6 font-sans text-sm tracking-tight font-medium text-slate-600">
+<a class="hover:text-blue-600 transition-colors" href="#">Programs</a>
+<a class="hover:text-blue-600 transition-colors" href="#">Admissions</a>
+<a class="hover:text-blue-600 transition-colors" href="#">Research</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<button class="bg-surface-container-high px-4 py-1.5 rounded-lg text-sm font-medium text-on-surface-variant hover:bg-surface-variant transition-colors">Apply Now</button>
+<div class="w-8 h-8 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container">
+<span class="material-symbols-outlined text-sm">notifications</span>
+</div>
+</div>
+</header>
+<!-- Content Body -->
+<div class="mt-16 p-8 max-w-7xl mx-auto space-y-8">
+<!-- Hero Stats / Summary Section -->
+<section class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- Academic History Summary Card -->
+<div class="col-span-1 md:col-span-2 bg-surface-container-lowest p-6 rounded-xl border border-outline-variant/15 shadow-sm relative overflow-hidden group">
+<div class="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-bl-full -mr-10 -mt-10 transition-transform group-hover:scale-110"></div>
+<div class="flex justify-between items-start mb-6">
+<div>
+<span class="text-[10px] uppercase tracking-widest font-bold text-slate-400 label-sm">Academic Standing</span>
+<h2 class="text-2xl font-bold text-on-surface mt-1">Excellent</h2>
+</div>
+<div class="text-right">
+<span class="text-4xl font-black text-primary tracking-tighter">3.88</span>
+<p class="text-[10px] uppercase tracking-widest font-bold text-slate-400">Current GPA</p>
+</div>
+</div>
+<div class="grid grid-cols-3 gap-4 mt-8 pt-6 border-t border-slate-100">
+<div>
+<p class="text-xs text-slate-500 font-medium">Total Credits</p>
+<p class="text-xl font-bold">102 <span class="text-xs font-normal text-slate-400">/ 120</span></p>
+</div>
+<div>
+<p class="text-xs text-slate-500 font-medium">Degree Progress</p>
+<p class="text-xl font-bold">85%</p>
+</div>
+<div>
+<p class="text-xs text-slate-500 font-medium">Rank</p>
+<p class="text-xl font-bold">Top 10%</p>
+</div>
+</div>
+</div>
+<!-- Mini Calendar Section -->
+<div class="bg-surface-container-low p-6 rounded-xl border border-outline-variant/15 flex flex-col">
+<div class="flex justify-between items-center mb-4">
+<span class="text-[10px] uppercase tracking-widest font-bold text-slate-400 label-sm">Schedule</span>
+<span class="text-xs font-semibold text-primary">Sept 2024</span>
+</div>
+<div class="flex flex-col space-y-3">
+<div class="flex gap-4 items-center p-2 rounded-lg bg-surface-container-lowest shadow-sm border border-outline-variant/5">
+<div class="bg-primary/10 text-primary w-10 h-10 rounded flex flex-col items-center justify-center">
+<span class="text-[10px] font-bold">MON</span>
+<span class="text-sm font-black">12</span>
+</div>
+<div>
+<p class="text-xs font-bold truncate max-w-[120px]">Advanced Physics II</p>
+<p class="text-[10px] text-slate-500">09:00 AM - 10:30 AM</p>
+</div>
+</div>
+<div class="flex gap-4 items-center p-2 rounded-lg bg-surface-container-lowest shadow-sm border border-outline-variant/5">
+<div class="bg-tertiary/10 text-tertiary w-10 h-10 rounded flex flex-col items-center justify-center">
+<span class="text-[10px] font-bold">WED</span>
+<span class="text-sm font-black">14</span>
+</div>
+<div>
+<p class="text-xs font-bold truncate max-w-[120px]">Calculus &amp; Logic</p>
+<p class="text-[10px] text-slate-500">11:00 AM - 12:30 PM</p>
+</div>
+</div>
+<button class="w-full mt-2 text-[10px] font-bold text-primary uppercase tracking-widest text-center hover:bg-primary/5 py-2 rounded transition-colors">View Full Planner</button>
+</div>
+</div>
+</section>
+<!-- Course Grid (Asymmetric Bento-like feel) -->
+<section>
+<div class="flex justify-between items-end mb-6">
+<div>
+<h3 class="text-xl font-bold text-on-surface">Enrolled Courses</h3>
+<p class="text-sm text-slate-500">Fall Semester 2024</p>
+</div>
+<a class="text-sm font-semibold text-primary hover:underline" href="#">Manage Registration</a>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+<!-- Course Card 1 -->
+<div class="group bg-surface-container-lowest rounded-xl border border-outline-variant/15 p-1 flex flex-col transition-all hover:shadow-lg">
+<div class="h-32 rounded-lg overflow-hidden relative">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Abstract mathematical visualization with glowing particles and geometric formulas on a dark background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBxOY6TbBvnwxF3WEzkuL1UErZPNzJFOvOfkWxCij5x7xhu5rztEJ3vBr26bhHDb0NKV-2syFW5HD2IwgKgfdn9B364g-ygBGmkrPzKjQfi9DrucIkWiOaVMMoBhmQ0JcipzRPASV1il2GaaUloV4xHwHzSxDyuF6tMGtpjx-o7gLjJ_YxVIm6IU8oA2wt_xjkn1k7cn6rPz3XVvqA5l5e4Nl4QpT7VPT04Zg2SsATkOV-WQ0XkPYApN40UIVwDR5RunwTy1Yxd8uk"/>
+<div class="absolute top-2 right-2 px-2 py-1 bg-white/90 backdrop-blur rounded text-[10px] font-bold text-on-surface">
+                                4 CREDITS
+                            </div>
+</div>
+<div class="p-4 flex flex-col flex-1">
+<span class="text-[10px] font-bold text-primary tracking-widest mb-1 uppercase">PHYS-402</span>
+<h4 class="font-bold text-sm text-on-surface mb-3 line-clamp-1">Advanced Physics II</h4>
+<div class="mt-auto flex items-center justify-between">
+<div class="flex items-center gap-2">
+<img class="w-6 h-6 rounded-full border border-outline-variant/20" data-alt="Close up portrait of an older professional professor with gray hair and glasses, academic setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCXL6KSbCCkZ25UYV981JwmUPmp3CKf02ZcAFA5bTHz5kyIj_8l7zOyhM_rRPj4Of6Lrx4nqmRjhMBXGoa2uLdKHVXupGIRupOUGxl0mjUJdcgTDvsg5OfGMGTj0p2bf4Ggb3_-IhHdeChGbNYXKAbPqJVeVwHbnVnMT7m4XSpdMw25UXZlQWyRRcaI2ibMOjIJ3kBDjgyypzErVRT2G073lh4dVKN426bUbCl68xt-sGwvJxE5dyGP_qpkIhj2QPr_Q92UccaHGDE"/>
+<span class="text-[10px] text-slate-600 font-medium">Dr. Henderson</span>
+</div>
+<span class="text-[10px] px-2 py-0.5 bg-tertiary-container text-on-tertiary-container rounded-full font-bold">Active</span>
+</div>
+</div>
+</div>
+<!-- Course Card 2 -->
+<div class="group bg-surface-container-lowest rounded-xl border border-outline-variant/15 p-1 flex flex-col transition-all hover:shadow-lg">
+<div class="h-32 rounded-lg overflow-hidden relative">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Close up of high-end vintage fountain pen and handwritten notes on parchment paper, atmospheric scholarly vibe" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBiHAJAI-Dph86pz1UZtO2hYpN5AadGzHQPo8dl4ifFuWm1DFOE-6NOsHJ5ShjM1ruSrzuZk0r-Ye9imQGryX2OuVgBuBiYrZAcB_B6vl4RhIcK8QH_KN63TzFfZH5xGZz9ARqBbOtDbQzYKyx4_Z4Ul3PgQxJmwG8BwY9CgATK1XyR5EOMcJHEZusIWb_bSAmM7q2BjiutgBon_0YIvjKE3Eo-6knCwiUGWwpvI9LIucxFasBJKJDcbCIISnw8BO62MtdNfcqy7Ws"/>
+<div class="absolute top-2 right-2 px-2 py-1 bg-white/90 backdrop-blur rounded text-[10px] font-bold text-on-surface">
+                                3 CREDITS
+                            </div>
+</div>
+<div class="p-4 flex flex-col flex-1">
+<span class="text-[10px] font-bold text-primary tracking-widest mb-1 uppercase">HIST-210</span>
+<h4 class="font-bold text-sm text-on-surface mb-3 line-clamp-1">Classical Civilizations</h4>
+<div class="mt-auto flex items-center justify-between">
+<div class="flex items-center gap-2">
+<img class="w-6 h-6 rounded-full border border-outline-variant/20" data-alt="Portrait of a female university lecturer with organized bookshelf in background, soft academic lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDys3XDE0Gkxw4JQwboRpWbEIkUfyfkYaMkO2eFVRgHqSpQR_0tUmfsxLzUCyn-AGzOT0zoplnjZL_DnFVY1zbCOIjYx54Ie60MvhaDA0ae3p7uvNFGklrlzkTBwHgqaNsbGbl5hOxTT9PKHxFQmoynEo9hENzNOJDMzdW0lOW3snLzvae_SG3TKBuL_AkVJARryk8eDJkANf6Pdeyevv9ALElt1y-9djEvNYlysFk4udKZPBeym9TF2XWtmg691DjwDBQ70FGG4L4"/>
+<span class="text-[10px] text-slate-600 font-medium">Prof. Aris</span>
+</div>
+<span class="text-[10px] px-2 py-0.5 bg-tertiary-container text-on-tertiary-container rounded-full font-bold">Active</span>
+</div>
+</div>
+</div>
+<!-- Course Card 3 -->
+<div class="group bg-surface-container-lowest rounded-xl border border-outline-variant/15 p-1 flex flex-col transition-all hover:shadow-lg">
+<div class="h-32 rounded-lg overflow-hidden relative">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Sleek silver laptop on desk showing complex code and data structures, modern tech aesthetic" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAhJKAHnR5xHvU2ML1LNKHNcDsvK0Edc5lShb8_3GLJX09sPobmeeOKb8g7vKWhuhCiFeIXb8-0leH9TnNKkZlKfMsjbNMi69VyR3n8psdhUXXTR_jKppgkGXuVNUhH2sifnsH6saVMaMdPcJ5SQ9Wmmj9TK0o2Q0rTZXUSNNgqkAglE0TSHfXk7-TktaPj0Tdg9zAWgsUaN55AlvOA6AB_rmirwoi7Z85F_vbYv7HdA3rVKRu8qCKDXbMCMz2S0CRPhX6mwV73VXY"/>
+<div class="absolute top-2 right-2 px-2 py-1 bg-white/90 backdrop-blur rounded text-[10px] font-bold text-on-surface">
+                                4 CREDITS
+                            </div>
+</div>
+<div class="p-4 flex flex-col flex-1">
+<span class="text-[10px] font-bold text-primary tracking-widest mb-1 uppercase">CS-302</span>
+<h4 class="font-bold text-sm text-on-surface mb-3 line-clamp-1">Algorithms &amp; Logic</h4>
+<div class="mt-auto flex items-center justify-between">
+<div class="flex items-center gap-2">
+<img class="w-6 h-6 rounded-full border border-outline-variant/20" data-alt="Professional headshot of a younger male tech instructor, clean studio lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBn4WAFJ0NExrD4oong5b7MLbEpfDlSIbF53ASjxAt6EKbGg9sa9LLj_aux8Nge-nDYPg1E75TPbqqUE1a3TVkE68ExwpgqZxe9SlaVIQTykFwXkeHHWhviuv5hxI3IT9EjFw042FKr7rxwf2atWqCtUyV14mwqEgP3flX40iX6RbVNS3Qki58UdMnF8sY0pgMTMiOWB3oNB1URvPHMTnU6POyoQf-n8UG_W-l69zDIRCWrQ91NbuMv9SXKK9GsgEYttdddfKq6Kgc"/>
+<span class="text-[10px] text-slate-600 font-medium">Dr. Vance</span>
+</div>
+<span class="text-[10px] px-2 py-0.5 bg-tertiary-container text-on-tertiary-container rounded-full font-bold">Active</span>
+</div>
+</div>
+</div>
+<!-- Course Card 4 (Registration Prompt) -->
+<div class="group bg-surface-container-low rounded-xl border-2 border-dashed border-outline-variant/30 p-6 flex flex-col items-center justify-center text-center transition-all hover:border-primary/50 hover:bg-white cursor-pointer">
+<div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-4 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined">add</span>
+</div>
+<p class="font-bold text-sm text-on-surface">Add New Course</p>
+<p class="text-[10px] text-slate-500 mt-1 uppercase tracking-widest font-bold">Electives Open</p>
+</div>
+</div>
+</section>
+<!-- Bottom Section: Research & Deadlines -->
+<section class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+<!-- Research Spotlight -->
+<div class="space-y-4">
+<h3 class="text-lg font-bold text-on-surface">Research &amp; Grants</h3>
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant/15 p-6 flex gap-6 items-start">
+<div class="flex-1">
+<span class="text-[10px] font-bold text-secondary tracking-widest uppercase bg-secondary-container px-2 py-0.5 rounded">Featured Publication</span>
+<h4 class="text-base font-bold text-on-surface mt-2 mb-2">Quantifying Scholastic Growth in Hybrid Learning Models</h4>
+<p class="text-xs text-slate-600 leading-relaxed">Recent study published by the University Research Group explores the efficacy of curated digital curricula.</p>
+<button class="mt-4 text-xs font-bold text-primary flex items-center gap-2 group">
+                                Read More 
+                                <span class="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</button>
+</div>
+<div class="w-24 h-24 rounded-lg bg-surface-container-high overflow-hidden shrink-0">
+<img class="w-full h-full object-cover" data-alt="Open heavy hardcover book on a wooden library table with soft bokeh background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDLNyMAuwsAc04IANSo3KWV08sP4Queq8F7WIC8VJQzBqHqp1Xfoa8vw8lrK8YAWeffyQOp3qztjhO_d5c2m2I4KM6yQlasHXOBrBLoxe9hvCQRioHUEc5ewqA9klczi8l6Dlsb4hqAADOdFF5Q8be8hgdpMZ0lB94tNU7kWTPwdi6OeJ-g_CpdawcPI7BMrZ-PAv68LA8zv0vMWVonZVRrrSW50wTzZtRzE1KIQ4nBHNZPiodb3lSbbBG5i_QmHgqOGBRn65pKEug"/>
+</div>
+</div>
+</div>
+<!-- Academic History (Mini Table style) -->
+<div class="space-y-4">
+<div class="flex justify-between items-center">
+<h3 class="text-lg font-bold text-on-surface">Recent Grades</h3>
+<a class="text-xs font-bold text-slate-400 hover:text-primary transition-colors" href="#">HISTORY</a>
+</div>
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant/15 overflow-hidden">
+<div class="p-4 space-y-4">
+<div class="flex justify-between items-center">
+<div class="flex items-center gap-3">
+<div class="w-2 h-2 rounded-full bg-green-500"></div>
+<div>
+<p class="text-xs font-bold">Intro to Quantum Computing</p>
+<p class="text-[10px] text-slate-400">Assignment: Final Project</p>
+</div>
+</div>
+<span class="text-sm font-black text-on-surface">A</span>
+</div>
+<div class="flex justify-between items-center">
+<div class="flex items-center gap-3">
+<div class="w-2 h-2 rounded-full bg-green-500"></div>
+<div>
+<p class="text-xs font-bold">Vector Algebra</p>
+<p class="text-[10px] text-slate-400">Assignment: Midterm 02</p>
+</div>
+</div>
+<span class="text-sm font-black text-on-surface">A-</span>
+</div>
+<div class="flex justify-between items-center">
+<div class="flex items-center gap-3">
+<div class="w-2 h-2 rounded-full bg-amber-500"></div>
+<div>
+<p class="text-xs font-bold">Structural Mechanics</p>
+<p class="text-[10px] text-slate-400">Assignment: Lab Report</p>
+</div>
+</div>
+<span class="text-sm font-black text-on-surface">B+</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+</div>
+<!-- Floating Action Button (Contextual) -->
+<button class="fixed bottom-8 right-8 w-14 h-14 rounded-full bg-gradient-to-br from-primary to-primary-dim text-on-primary shadow-lg flex items-center justify-center group active:scale-95 transition-all z-40">
+<span class="material-symbols-outlined text-2xl group-hover:rotate-12 transition-transform">school</span>
+</button>
+<!-- Footer Shell -->
+<footer class="w-full py-12 px-8 border-t border-slate-200 bg-slate-50 flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+<div class="text-xs uppercase tracking-widest text-slate-400">
+                © 2024 The Scholastic Curator. All institutional rights reserved.
+            </div>
+<div class="flex gap-6">
+<a class="text-xs uppercase tracking-widest text-slate-500 hover:text-blue-800 transition-colors" href="#">Privacy Policy</a>
+<a class="text-xs uppercase tracking-widest text-slate-500 hover:text-blue-800 transition-colors" href="#">Accessibility</a>
+<a class="text-xs uppercase tracking-widest text-slate-500 hover:text-blue-800 transition-colors" href="#">Campus Directory</a>
+</div>
+</footer>
+</main>
+</body></html>
