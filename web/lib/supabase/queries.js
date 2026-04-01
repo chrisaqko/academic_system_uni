@@ -1,189 +1,166 @@
-import { supabase, isSupabaseConfigured } from './client';
-import {
-  mockUsers, mockCourses, mockClassrooms, mockSchedules,
-  mockCourseClassroom, mockTeacherAllocation, mockEnrolledSchedule,
-  mockAcademicHistory, mockStudyPrograms, mockDashboardMetrics,
-} from '../data/mockData';
-
-// ──────── helpers ────────
-const withMockFallback = (supabaseQuery, mockData) => {
-  if (!isSupabaseConfigured()) return Promise.resolve(mockData);
-  return supabaseQuery();
-};
+import { supabase } from "./client";
 
 // ──────── Users ────────
+
 export async function getUsers() {
-  return withMockFallback(async () => {
-    const { data, error } = await supabase.from('user').select('*, status(*), teaching_specialization(*)');
-    if (error) throw error;
-    return data;
-  }, mockUsers);
+  const { data, error } = await supabase.from("user").select("*");
+  if (error) throw error;
+  return data ?? [];
 }
 
 export async function getUserById(id) {
-  return withMockFallback(async () => {
-    const { data, error } = await supabase.from('user').select('*').eq('id_user', id).single();
-    if (error) throw error;
-    return data;
-  }, mockUsers.find(u => u.id_user === id));
+  const { data, error } = await supabase
+    .from("user")
+    .select("*")
+    .eq("id_user", id)
+    .single();
+  if (error) throw error;
+  return data;
 }
 
 export async function upsertUser(user) {
-  if (!isSupabaseConfigured()) return user;
-  const { data, error } = await supabase.from('user').upsert(user).select().single();
+  const { data, error } = await supabase
+    .from("user")
+    .upsert(user)
+    .select()
+    .single();
   if (error) throw error;
   return data;
 }
 
 // ──────── Courses ────────
+
 export async function getCourses() {
-  return withMockFallback(async () => {
-    const { data, error } = await supabase.from('course').select('*, status(*)');
-    if (error) throw error;
-    return data;
-  }, mockCourses);
+  const { data, error } = await supabase.from("course").select("*");
+  if (error) throw error;
+  return data ?? [];
 }
 
 export async function upsertCourse(course) {
-  if (!isSupabaseConfigured()) return course;
-  const { data, error } = await supabase.from('course').upsert(course).select().single();
+  const { data, error } = await supabase
+    .from("course")
+    .upsert(course)
+    .select()
+    .single();
   if (error) throw error;
   return data;
 }
 
 // ──────── Classrooms ────────
+
 export async function getClassrooms() {
-  return withMockFallback(async () => {
-    const { data, error } = await supabase.from('classrom').select('*, status(*)');
-    if (error) throw error;
-    return data;
-  }, mockClassrooms);
+  const { data, error } = await supabase.from("classrom").select("*");
+  if (error) throw error;
+  return data ?? [];
 }
 
 export async function upsertClassroom(room) {
-  if (!isSupabaseConfigured()) return room;
-  const { data, error } = await supabase.from('classrom').upsert(room).select().single();
+  const { data, error } = await supabase
+    .from("classrom")
+    .upsert(room)
+    .select()
+    .single();
   if (error) throw error;
   return data;
 }
 
 // ──────── Schedules (full join) ────────
+
 export async function getSchedules() {
-  return withMockFallback(async () => {
-    const { data, error } = await supabase
-      .from('course_classrom')
-      .select('*, schedule(*), course(*), classrom(*), status(*)');
-    if (error) throw error;
-    return data;
-  }, buildScheduleGrid());
+  const { data, error } = await supabase
+    .from("course_classrom")
+    .select("*, schedule(*), course(*), classrom(*)");
+  if (error) throw error;
+  return data ?? [];
 }
 
-// Build enriched schedule grid from mock data
+/**
+ * Synchronous — kept for backward compat with components that call it at
+ * render time. Returns an empty array now that mock data is removed;
+ * use getSchedules() for real data.
+ */
 export function buildScheduleGrid() {
-  return mockCourseClassroom.map(cc => ({
-    ...cc,
-    schedule:  mockSchedules.find(s => s.id_schedule === cc.id_schedule),
-    course:    mockCourses.find(c => c.id_course === cc.id_course),
-    classrom:  mockClassrooms.find(r => r.id_classrom === cc.id_classrom),
-  }));
+  return [];
 }
 
 // ──────── Teacher schedule ────────
-export async function getTeacherSchedule(userId) {
-  return withMockFallback(async () => {
-    const { data, error } = await supabase
-      .from('teacher_allocation')
-      .select('*, schedule(*), course(*)')
-      .eq('id_user', userId);
-    if (error) throw error;
-    return data;
-  }, buildTeacherSchedule(userId));
+
+export async function getTeacherSchedule(profileId) {
+  const { data, error } = await supabase
+    .from("teacher_allocation")
+    .select("*, schedule(*), course(*)")
+    .eq("id_profile", profileId);
+  if (error) throw error;
+  return data ?? [];
 }
 
-export function buildTeacherSchedule(userId) {
-  return mockTeacherAllocation
-    .filter(ta => ta.id_user === userId)
-    .map(ta => ({
-      ...ta,
-      schedule: mockSchedules.find(s => s.id_schedule === ta.id_schedule),
-      course:   mockCourses.find(c => c.id_course === ta.id_course),
-      classrom: (() => {
-        const cc = mockCourseClassroom.find(
-          c => c.id_course === ta.id_course && c.id_schedule === ta.id_schedule
-        );
-        return cc ? mockClassrooms.find(r => r.id_classrom === cc.id_classrom) : null;
-      })(),
-    }));
+/**
+ * Synchronous — kept for backward compat with TeacherDashboard which calls
+ * this at render time. Returns an empty array; replace callers with the
+ * async getTeacherSchedule() for real data.
+ */
+export function buildTeacherSchedule(_profileId) {
+  return [];
 }
 
 // ──────── Student enrollments ────────
-export async function getStudentEnrollments(userId) {
-  return withMockFallback(async () => {
-    const { data, error } = await supabase
-      .from('enrolled_schedule')
-      .select('*, course(*), schedule(*)')
-      .eq('id_user', userId);
-    if (error) throw error;
-    return data;
-  }, buildStudentEnrollments(userId));
+
+export async function getStudentEnrollments(profileId) {
+  const { data, error } = await supabase
+    .from("enrolled_schedule")
+    .select("*, course(*), schedule(*)")
+    .eq("id_profile", profileId);
+  if (error) throw error;
+  return data ?? [];
 }
 
-export function buildStudentEnrollments(userId) {
-  return mockEnrolledSchedule
-    .filter(e => e.id_user === userId)
-    .map(e => ({
-      ...e,
-      course:   mockCourses.find(c => c.id_course === e.id_course),
-      schedule: mockSchedules.find(s => s.id_schedule === e.id_schedule),
-      teacher:  (() => {
-        const alloc = mockTeacherAllocation.find(
-          ta => ta.id_course === e.id_course && ta.id_schedule === e.id_schedule
-        );
-        return alloc ? mockUsers.find(u => u.id_user === alloc.id_user) : null;
-      })(),
-    }));
+/**
+ * Synchronous — kept for backward compat. Returns an empty array;
+ * use the async getStudentEnrollments() for real data.
+ */
+export function buildStudentEnrollments(_profileId) {
+  return [];
 }
 
 // ──────── Student academic history ────────
-export async function getStudentHistory(userId) {
-  return withMockFallback(async () => {
-    const { data, error } = await supabase
-      .from('academic_history')
-      .select('*, course(*)')
-      .eq('id_user', userId);
-    if (error) throw error;
-    return data;
-  }, mockAcademicHistory
-    .filter(h => h.id_user === userId)
-    .map(h => ({ ...h, course: mockCourses.find(c => c.id_course === h.id_course) }))
-  );
+
+export async function getStudentHistory(profileId) {
+  const { data, error } = await supabase
+    .from("academic_history")
+    .select("*, course(*)")
+    .eq("id_profile", profileId);
+  if (error) throw error;
+  return data ?? [];
 }
 
 // ──────── Study programs ────────
+
 export async function getStudyPrograms() {
-  return withMockFallback(async () => {
-    const { data, error } = await supabase.from('study_program').select('*, status(*)');
-    if (error) throw error;
-    return data;
-  }, mockStudyPrograms);
+  const { data, error } = await supabase
+    .from("courses_program")
+    .select("*");
+  if (error) throw error;
+  return data ?? [];
 }
 
 // ──────── Dashboard metrics ────────
+
 export async function getDashboardMetrics() {
-  if (!isSupabaseConfigured()) return mockDashboardMetrics;
   const [usersRes, coursesRes, classroomsRes] = await Promise.all([
-    supabase.from('user').select('id_user', { count: 'exact', head: true }),
-    supabase.from('course').select('id_course', { count: 'exact', head: true }),
-    supabase.from('classrom').select('id_classrom', { count: 'exact', head: true }),
+    supabase.from("user").select("id_user",   { count: "exact", head: true }),
+    supabase.from("course").select("id_course", { count: "exact", head: true }),
+    supabase.from("classrom").select("id_classrom", { count: "exact", head: true }),
   ]);
+
   return {
-    totalStudents:    usersRes.count ?? mockDashboardMetrics.totalStudents,
-    totalCourses:     coursesRes.count ?? mockDashboardMetrics.totalCourses,
-    activeClassrooms: classroomsRes.count ?? mockDashboardMetrics.activeClassrooms,
-    classroomOccupancy: mockDashboardMetrics.classroomOccupancy,
-    systemHealth:     mockDashboardMetrics.systemHealth,
-    departments:      mockDashboardMetrics.departments,
-    staffingInsights: mockDashboardMetrics.staffingInsights,
-    recentActivity:   mockDashboardMetrics.recentActivity,
+    totalStudents:    usersRes.count      ?? 0,
+    totalCourses:     coursesRes.count    ?? 0,
+    activeClassrooms: classroomsRes.count ?? 0,
+    // Fields below have no dedicated table yet — return safe defaults
+    classroomOccupancy: null,
+    systemHealth:       "99.9%",
+    departments:        null,
+    staffingInsights:   [],
+    recentActivity:     [],
   };
 }

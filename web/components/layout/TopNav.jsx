@@ -1,29 +1,30 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { Search, Bell, HelpCircle, Download, RefreshCw } from 'lucide-react';
-import Avatar from '@/components/ui/Avatar';
-import { getMockSession } from '@/lib/auth/mockAuth';
+import { Search, Bell, HelpCircle } from "lucide-react";
+import Avatar from "@/components/ui/Avatar";
+import { useAuth } from "@/lib/auth/AuthContext";
 
 export default function TopNav({ title, subtitle, actions }) {
-  const [session, setSession] = useState(null);
-
-  useEffect(() => { setSession(getMockSession()); }, []);
+  const { profile } = useAuth();   // ← from context, no useEffect
 
   const roleLabel = {
-    admin:   'Administrator',
-    teacher: 'Faculty',
-    student: 'Student',
+    admin: "Administrator",
+    teacher: "Faculty",
+    student: "Student",
   };
 
   return (
-    <header className="h-14 flex items-center justify-between px-6 bg-white border-b border-slate-200 flex-shrink-0 sticky top-0 z-20">
+    <header className="h-14 flex items-center justify-between px-6 bg-white border-b border-slate-200 shrink-0 sticky top-0 z-20">
       {/* Left: page title */}
       <div className="flex items-center gap-4 min-w-0">
         {title && (
           <div className="min-w-0">
-            {subtitle && <p className="sc-label leading-none mb-0.5">{subtitle}</p>}
-            <h1 className="text-base font-bold text-slate-900 leading-tight truncate">{title}</h1>
+            {subtitle && (
+              <p className="sc-label leading-none mb-0.5">{subtitle}</p>
+            )}
+            <h1 className="text-base font-bold text-slate-900 leading-tight truncate">
+              {title}
+            </h1>
           </div>
         )}
       </div>
@@ -31,7 +32,10 @@ export default function TopNav({ title, subtitle, actions }) {
       {/* Center: search */}
       <div className="hidden md:flex flex-1 max-w-xs mx-8">
         <div className="relative w-full">
-          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+          <Search
+            size={14}
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+          />
           <input
             type="search"
             placeholder="Search curated data…"
@@ -41,7 +45,7 @@ export default function TopNav({ title, subtitle, actions }) {
       </div>
 
       {/* Right: actions + user */}
-      <div className="flex items-center gap-2 flex-shrink-0">
+      <div className="flex items-center gap-2 shrink-0">
         {actions}
         <button className="p-2 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors relative">
           <Bell size={16} />
@@ -50,13 +54,22 @@ export default function TopNav({ title, subtitle, actions }) {
         <button className="p-2 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors">
           <HelpCircle size={16} />
         </button>
-        {session && (
+        {profile && (
           <div className="flex items-center gap-2.5 ml-1 pl-3 border-l border-slate-200">
             <div className="hidden sm:flex flex-col items-end">
-              <span className="text-xs font-semibold text-slate-700">{session.name} {session.surname}</span>
-              <span className="text-[10px] text-slate-400">{roleLabel[session.user_type]}</span>
+              <span className="text-xs font-semibold text-slate-700">
+                {profile.name} {profile.surname}
+              </span>
+              <span className="text-[10px] text-slate-400">
+                {roleLabel[profile.user_type]}
+              </span>
             </div>
-            <Avatar name={session.name} surname={session.surname} size="sm" online />
+            <Avatar
+              name={profile.name}
+              surname={profile.surname}
+              size="sm"
+              online
+            />
           </div>
         )}
       </div>
