@@ -42,11 +42,16 @@ export async function upsertUser(user) {
 // ──────── Courses ────────
 
 export async function getCourses() {
-  const { data, error } = await supabase.from("course").select("*");
+  const { data, error } = await supabase.from("course").select(`
+      *,
+      courses_program (
+        id_program
+      )
+    `);
+
   if (error) throw error;
   return data ?? [];
 }
-
 /**
  * Returns all rows from the courses_program join table.
  * NOTE: Supabase caps .select("*") at 1000 rows by default.
@@ -58,14 +63,69 @@ export async function getCoursesByProgram() {
   return data ?? [];
 }
 
+export async function updateCoursePrograms(id_course, programIds) {
+  const { error: deleteError } = await supabase
+    .from("courses_program")
+    .delete()
+    .eq("id_course", id_course);
+  if (deleteError) throw deleteError;
+
+  if (programIds && programIds.length > 0) {
+    const inserts = programIds.map((pid) => ({
+      id_course,
+      id_program: pid,
+      id_status: 1,
+    }));
+    const { error: insertError } = await supabase
+      .from("courses_program")
+      .insert(inserts);
+    if (insertError) throw insertError;
+  }
+}
+
 export async function upsertCourse(course) {
+  // Prevent PostgREST from treating nested relation arrays as columns
+  const payload = { ...course };
+  delete payload.courses_program;
+
   const { data, error } = await supabase
     .from("course")
-    .upsert(course)
+    .upsert(payload)
     .select()
     .single();
   if (error) throw error;
   return data;
+}
+
+// ──────── Classrooms ────────
+
+export async function getRelatedCourses() {
+  const { data, error } = await supabase
+    .from("related_course")
+    .select("*");
+  if (error) throw error;
+  return data ?? [];
+}
+
+export async function updateRelatedCourses(id_course, relatedCourses) {
+  const { error: deleteError } = await supabase
+    .from("related_course")
+    .delete()
+    .eq("id_course", id_course);
+  if (deleteError) throw deleteError;
+
+  if (relatedCourses && relatedCourses.length > 0) {
+    const inserts = relatedCourses.map((rc) => ({
+      id_course,
+      id_required_course: rc.id_required_course,
+      relation: rc.relation,
+      id_status: rc.id_status ?? 1,
+    }));
+    const { error: insertError } = await supabase
+      .from("related_course")
+      .insert(inserts);
+    if (insertError) throw insertError;
+  }
 }
 
 // ──────── Classrooms ────────
