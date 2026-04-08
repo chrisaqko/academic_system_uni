@@ -26,7 +26,9 @@ export default function CourseFormModal({
     id_status: parseInt(course?.id_status) || 1,
   });
   const [programSelection, setProgramSelection] = useState(selectedPrograms);
-  const [relatedSelection, setRelatedSelection] = useState(selectedRelatedCourses);
+  const [relatedSelection, setRelatedSelection] = useState(
+    selectedRelatedCourses,
+  );
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
 
@@ -41,6 +43,8 @@ export default function CourseFormModal({
   }, []);
   const [errors, setErrors] = useState({});
   const [saving, setSaving] = useState(false);
+  const [newReq, setNewReq] = useState({ course: "", relation: "requisite" });
+  const [newReqError, setNewReqError] = useState("");
 
   useEffect(() => {
     if (isOpen) {
@@ -54,6 +58,8 @@ export default function CourseFormModal({
       setProgramSelection(selectedPrograms || []);
       setRelatedSelection(selectedRelatedCourses || []);
       setErrors({});
+      setNewReq({ course: "", relation: "requisite" });
+      setNewReqError("");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen, course, initialMode, selectedPrograms, selectedRelatedCourses]);
@@ -78,7 +84,7 @@ export default function CourseFormModal({
     onSave?.(
       { ...form, credits: Number(form.credits), quota: Number(form.quota) },
       programSelection,
-      relatedSelection
+      relatedSelection,
     );
     setSaving(false);
     onClose();
@@ -239,7 +245,7 @@ export default function CourseFormModal({
             <div className="flex flex-col gap-2">
               {relatedSelection.map((rel, idx) => {
                 const reqCourse = courses.find(
-                  (c) => c.id_course === rel.id_required_course
+                  (c) => c.id_course === rel.id_required_course,
                 );
                 return (
                   <div
@@ -259,7 +265,7 @@ export default function CourseFormModal({
                         type="button"
                         onClick={() =>
                           setRelatedSelection((prev) =>
-                            prev.filter((_, i) => i !== idx)
+                            prev.filter((_, i) => i !== idx),
                           )
                         }
                         className="text-slate-400 hover:text-red-500 transition-colors p-1"
@@ -278,51 +284,63 @@ export default function CourseFormModal({
           )}
 
           {mode !== "view" && (
-            <div className="flex gap-2 items-end mt-1">
-              <Select
-                id="newReqCourse"
-                containerClassName="flex-1"
-                options={[
-                  { value: "", label: "Select course..." },
-                  ...courses
-                    .filter(
-                      (c) =>
-                        c.id_course !== course?.id_course &&
-                        !relatedSelection.find(
-                          (r) => r.id_required_course === c.id_course
-                        )
-                    )
-                    .map((c) => ({ value: c.id_course, label: c.name })),
-                ]}
-              />
-              <Select
-                id="newReqRelation"
-                options={[
-                  { value: "requisite", label: "Requisite" },
-                  { value: "correquisite", label: "Correquisite" },
-                ]}
-              />
-              <Button
-                type="button"
-                variant="secondary"
-                onClick={() => {
-                  const cSelect = document.getElementById("newReqCourse");
-                  const rSelect = document.getElementById("newReqRelation");
-                  if (cSelect.value) {
+            <div className="flex flex-col gap-1 mt-1">
+              <div className="flex gap-2 items-start">
+                <Select
+                  value={newReq.course}
+                  onChange={(e) => {
+                    setNewReq((prev) => ({ ...prev, course: e.target.value }));
+                    if (newReqError) setNewReqError("");
+                  }}
+                  containerClassName="flex-1"
+                  options={[
+                    { value: "", label: "Select course..." },
+                    ...courses
+                      .filter(
+                        (c) =>
+                          c.id_course !== course?.id_course &&
+                          !relatedSelection.find(
+                            (r) => r.id_required_course === c.id_course,
+                          ),
+                      )
+                      .map((c) => ({ value: c.id_course, label: c.name })),
+                  ]}
+                  error={newReqError}
+                />
+                <Select
+                  value={newReq.relation}
+                  onChange={(e) =>
+                    setNewReq((prev) => ({ ...prev, relation: e.target.value }))
+                  }
+                  options={[
+                    { value: "requisite", label: "Requisite" },
+                    { value: "correquisite", label: "Correquisite" },
+                  ]}
+                />
+                <Button
+                  type="button"
+                  variant="secondary"
+                  className={newReqError ? "mt-0" : ""} // Align adjustments if error shows
+                  onClick={() => {
+                    if (!newReq.course) {
+                      setNewReqError("Please select a course");
+                      return;
+                    }
                     setRelatedSelection((prev) => [
                       ...prev,
                       {
-                        id_required_course: parseInt(cSelect.value),
-                        relation: rSelect.value,
+                        id_required_course: parseInt(newReq.course),
+                        relation: newReq.relation,
                         id_status: 1,
                       },
                     ]);
-                    cSelect.value = "";
-                  }
-                }}
-              >
-                Add
-              </Button>
+                    setNewReq({ course: "", relation: "requisite" });
+                    setNewReqError("");
+                  }}
+                >
+                  Add
+                </Button>
+              </div>
             </div>
           )}
         </div>

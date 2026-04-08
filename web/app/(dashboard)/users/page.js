@@ -330,13 +330,16 @@ export default function UsersPage() {
         });
         if (error) throw error;
       } else {
+        const generatedPassword = Math.random().toString(36).slice(-8) + "A1!z";
         const response = await fetch("/api/admin/create-user", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ ...payload, password: "TempPassword123!" }),
+          body: JSON.stringify({ ...payload, password: generatedPassword }),
         });
         const data = await response.json();
         if (!response.ok) throw new Error(data.error || "Error creating user");
+        
+        alert(`User created successfully.\nTemporary password: ${generatedPassword}\n\nPlease ensure this password is provided to the user, as it cannot be retrieved later.`);
       }
       const updatedUsers = await getUsers();
       setUsers(updatedUsers);

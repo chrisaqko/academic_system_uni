@@ -28,6 +28,7 @@ export default function ClassroomsPage() {
   const [viewMode, setViewMode] = useState("list");
   const [modalOpen, setModalOpen] = useState(false);
   const [editRoom, setEditRoom] = useState(null);
+  const [initialMode, setInitialMode] = useState("create");
 
   useEffect(() => {
     getClassrooms().then((d) => {
@@ -49,6 +50,13 @@ export default function ClassroomsPage() {
   const openEdit = (row, e) => {
     e?.stopPropagation();
     setEditRoom(row);
+    setInitialMode("edit");
+    setModalOpen(true);
+  };
+
+  const openView = (row) => {
+    setEditRoom(row);
+    setInitialMode("view");
     setModalOpen(true);
   };
 
@@ -139,7 +147,10 @@ export default function ClassroomsPage() {
   const renderCard = (row) => {
     const isActive = row.id_status === 1;
     return (
-      <div className="group relative bg-white border border-slate-200 rounded-xl shadow-soft p-5 hover:shadow-card hover:border-slate-300 transition-all duration-200">
+      <div 
+        className="group relative bg-white border border-slate-200 rounded-xl shadow-soft p-5 hover:shadow-card hover:border-slate-300 transition-all duration-200 cursor-pointer"
+        onClick={() => openView(row)}
+      >
         {/* Header */}
         <div className="flex items-start justify-between mb-4">
           <div className="flex items-center gap-3">
@@ -242,6 +253,7 @@ export default function ClassroomsPage() {
           <Button
             onClick={() => {
               setEditRoom(null);
+              setInitialMode("create");
               setModalOpen(true);
             }}
           >
@@ -259,6 +271,7 @@ export default function ClassroomsPage() {
             data={filtered}
             loading={loading}
             emptyState="No classrooms found."
+            onRowClick={(row) => openView(row)}
           />
         ) : (
           <GridView
@@ -277,6 +290,7 @@ export default function ClassroomsPage() {
           setEditRoom(null);
         }}
         classroom={editRoom}
+        initialMode={initialMode}
         onSave={async (r) => {
           setLoading(true);
           try {

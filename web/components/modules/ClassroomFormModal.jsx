@@ -13,28 +13,29 @@ export default function ClassroomFormModal({
   onClose,
   classroom = null,
   onSave,
+  initialMode = "create",
 }) {
-  const isEdit = !!classroom;
-
+  const [mode, setMode] = useState(initialMode);
   const [form, setForm] = useState(DEFAULT_FORM);
   const [errors, setErrors] = useState({});
   const [saving, setSaving] = useState(false);
 
-  // Re-populate the form whenever the selected classroom changes (or when
-  // the modal resets to "create" mode by receiving null).
   useEffect(() => {
-    if (classroom) {
-      setForm({
-        n_classrom: classroom.n_classrom ?? "",
-        capacity: classroom.capacity ?? 30,
-        id_status: classroom.id_status ?? 1,
-      });
-    } else {
-      setForm(DEFAULT_FORM);
+    if (isOpen) {
+      setMode(initialMode);
+      if (classroom) {
+        setForm({
+          n_classrom: classroom.n_classrom ?? "",
+          capacity: classroom.capacity ?? 30,
+          id_status: classroom.id_status ?? 1,
+        });
+      } else {
+        setForm(DEFAULT_FORM);
+      }
+      setErrors({});
     }
-    setErrors({});
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [classroom]);
+  }, [isOpen, classroom, initialMode]);
 
   const update = (key, val) => setForm((f) => ({ ...f, [key]: val }));
 
@@ -59,7 +60,13 @@ export default function ClassroomFormModal({
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title={isEdit ? "Edit Classroom" : "Add New Classroom"}
+      title={
+        mode === "view"
+          ? "Classroom Details"
+          : mode === "edit"
+            ? "Edit Classroom"
+            : "Add New Classroom"
+      }
       size="sm"
     >
       <form onSubmit={handleSubmit} className="space-y-4">
@@ -70,6 +77,7 @@ export default function ClassroomFormModal({
           onChange={(e) => update("n_classrom", e.target.value)}
           error={errors.n_classrom}
           placeholder="e.g. Hall 4B"
+          disabled={mode === "view"}
         />
         <Input
           label="Capacity"
@@ -79,6 +87,7 @@ export default function ClassroomFormModal({
           value={form.capacity}
           onChange={(e) => update("capacity", e.target.value)}
           error={errors.capacity}
+          disabled={mode === "view"}
         />
         <Select
           label="Status"
@@ -89,14 +98,21 @@ export default function ClassroomFormModal({
             { value: 1, label: "Active" },
             { value: 2, label: "Inactive" },
           ]}
+          disabled={mode === "view"}
         />
         <div className="flex justify-end gap-2 pt-3 border-t border-slate-100">
           <Button variant="secondary" onClick={onClose} type="button">
-            Cancel
+            {mode === "view" ? "Close" : "Cancel"}
           </Button>
-          <Button type="submit" loading={saving}>
-            {isEdit ? "Save Changes" : "Add Classroom"}
-          </Button>
+          {mode === "view" ? (
+            <Button type="button" onClick={() => setMode("edit")}>
+              Edit Info
+            </Button>
+          ) : (
+            <Button type="submit" loading={saving}>
+              {mode === "edit" ? "Save Changes" : "Add Classroom"}
+            </Button>
+          )}
         </div>
       </form>
     </Modal>
