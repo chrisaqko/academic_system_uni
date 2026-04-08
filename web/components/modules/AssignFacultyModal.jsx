@@ -29,7 +29,12 @@ const EMPTY = {
   id_status: 1,
 };
 
-export default function AssignFacultyModal({ isOpen, onClose, onSaved }) {
+export default function AssignFacultyModal({ 
+  isOpen, 
+  onClose, 
+  onSaved,
+  initialFacultyId = ""
+}) {
   const [form, setForm] = useState(EMPTY);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
@@ -46,7 +51,7 @@ export default function AssignFacultyModal({ isOpen, onClose, onSaved }) {
   // ── Load dropdown data once when the modal opens ────────────────────────────
   useEffect(() => {
     if (!isOpen) return;
-    setForm(EMPTY);
+    setForm({ ...EMPTY, id_profile: initialFacultyId });
     setError(null);
     setOptsLoading(true);
 
@@ -66,7 +71,7 @@ export default function AssignFacultyModal({ isOpen, onClose, onSaved }) {
       })
       .catch((err) => setError(err.message))
       .finally(() => setOptsLoading(false));
-  }, [isOpen]);
+  }, [isOpen, initialFacultyId]);
 
   // ── Availability hint: triggers whenever faculty + schedule both set ─────────
   useEffect(() => {

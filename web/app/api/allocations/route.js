@@ -42,6 +42,7 @@ export async function GET(request) {
     let query = supabase.from("teacher_allocation").select(`
         id_allocation,
         id_status,
+        status ( description ),
         id_schedule_course,
         profile (
           id_profile,
@@ -62,7 +63,9 @@ export async function GET(request) {
           schedule (
             id_schedule,
             week_day,
-            shift
+            shift,
+            id_status,
+            status ( description )
           ),
           course_classrom (
             id_course_classroom,
@@ -201,7 +204,6 @@ export async function POST(request) {
     }
 
     // ── Step A: Get or Create schedule_course ────────────────────────────────
-    // We check for an existing link first to avoid pkey conflicts on id_schedule_course.
     let { data: sc, error: scFindErr } = await supabase
       .from("schedule_course")
       .select("id_schedule_course")
@@ -212,18 +214,37 @@ export async function POST(request) {
     if (scFindErr) throw scFindErr;
 
     if (!sc) {
+      // Step A.1: Try to insert
       const { data: newSc, error: scInsErr } = await supabase
         .from("schedule_course")
         .insert({ id_course, id_schedule, id_status })
         .select("id_schedule_course")
         .single();
-      if (scInsErr) throw scInsErr;
-      sc = newSc;
+
+      if (scInsErr) {
+        // Step A.2: If we hit a duplicate key (23505), someone might have just created it
+        if (scInsErr.code === "23505") {
+          const { data: retrySc } = await supabase
+            .from("schedule_course")
+            .select("id_schedule_course")
+            .eq("id_course", id_course)
+            .eq("id_schedule", id_schedule)
+            .single();
+          if (retrySc) {
+            sc = retrySc;
+          } else {
+            throw scInsErr;
+          }
+        } else {
+          throw scInsErr;
+        }
+      } else {
+        sc = newSc;
+      }
     }
     const id_schedule_course = sc.id_schedule_course;
 
     // ── Step B: Get or Create course_classrom ────────────────────────────────
-    // Using the business keys to avoid pkey conflicts on id_course_classroom.
     let { data: cc, error: ccFindErr } = await supabase
       .from("course_classrom")
       .select("id_course_classroom")
@@ -237,7 +258,21 @@ export async function POST(request) {
       const { error: ccInsErr } = await supabase
         .from("course_classrom")
         .insert({ id_schedule_course, id_classrom, id_status });
-      if (ccInsErr) throw ccInsErr;
+
+      if (ccInsErr) {
+        if (ccInsErr.code === "23505") {
+          // If collision, check if it was created during the race
+          const { data: retryCc } = await supabase
+            .from("course_classrom")
+            .select("id_course_classroom")
+            .eq("id_schedule_course", id_schedule_course)
+            .eq("id_classrom", id_classrom)
+            .maybeSingle();
+          if (!retryCc) throw ccInsErr;
+        } else {
+          throw ccInsErr;
+        }
+      }
     }
 
     // ── Step C: Insert teacher_allocation ─────────────────────────────────────
@@ -307,6 +342,7 @@ function flattenAllocation(row) {
     // Allocation
     id_allocation: row.id_allocation,
     allocation_status: row.id_status,
+    allocation_status_label: row.status?.description ?? "Unknown",
 
     // Teacher / Profile
     id_profile: row.profile?.id_profile ?? null,
@@ -327,6 +363,8 @@ function flattenAllocation(row) {
     // Schedule details
     week_day: sc.schedule?.week_day ?? null,
     shift: sc.schedule?.shift ?? null,
+    schedule_status: sc.schedule?.id_status ?? null,
+    schedule_status_label: sc.schedule?.status?.description ?? "Unknown",
 
     // Classroom
     id_classrom: cc.classrom?.id_classrom ?? null,
