@@ -133,12 +133,17 @@ export default function LoginPage() {
 
               {/* Password */}
               <div className="space-y-1.5">
-                <label
-                  htmlFor="password"
-                  className="text-xs font-semibold text-slate-600 uppercase tracking-wide"
-                >
-                  Password
-                </label>
+                <div className="flex items-center justify-between">
+                  <label
+                    htmlFor="password"
+                    className="text-xs font-semibold text-slate-600 uppercase tracking-wide"
+                  >
+                    Password
+                  </label>
+                  <Link href="/reset-password" className="text-xs font-semibold text-primary-600 hover:underline">
+                    Forgot password?
+                  </Link>
+                </div>
                 <div className="relative">
                   <Lock
                     size={15}
