@@ -1,6 +1,17 @@
 "use client";
 
-import { useEffect, useState, useCallback, useMemo } from "react";
+/**
+ * SchedulesPage — Faculty Allocations dashboard.
+ *
+ * SOLID refactoring applied:
+ *   SRP  → Data logic extracted to useFacultyAllocations hook.
+ *          FacultyDetailModal extracted to its own component file.
+ *   OCP  → Filter options pulled from centralised config/constants.
+ *   ISP  → FacultyDetailModal receives lean props, not a monolithic object.
+ *   DIP  → Allocation mutations go through AllocationService, not raw queries.
+ */
+
+import { useState, useCallback } from "react";
 import {
   UserCheck,
   Search,
@@ -12,10 +23,7 @@ import {
   Trash2,
   Filter,
   Users,
-  LayoutGrid,
-  List as ListIcon,
   ChevronRight,
-  MoreHorizontal,
 } from "lucide-react";
 import TopNav from "@/components/layout/TopNav";
 import Table from "@/components/ui/Table";
@@ -24,10 +32,11 @@ import ViewToggle from "@/components/ui/ViewToggle";
 import Badge from "@/components/ui/Badge";
 import Button from "@/components/ui/Button";
 import Avatar from "@/components/ui/Avatar";
-import Modal from "@/components/ui/Modal";
 import AssignFacultyModal from "@/components/modules/AssignFacultyModal";
-import { getAllocations, deleteAllocation } from "@/lib/supabase/queries";
+import FacultyDetailModal from "@/components/modules/FacultyDetailModal";
 import { useAuth } from "@/lib/auth/AuthContext";
+import { useFacultyAllocations } from "@/lib/hooks/useFacultyAllocations";
+import { ALLOCATION_STATUS_FILTERS } from "@/lib/config/constants";
 
 // ── Table columns definition ───────────────────────────────────────────────────
 function buildColumns(onViewDetails, onAddSchedule) {
@@ -95,118 +104,37 @@ function buildColumns(onViewDetails, onAddSchedule) {
   ];
 }
 
-// ── Detail Modal Component ─────────────────────────────────────────────────────
-function FacultyDetailModal({
-  faculty,
-  isOpen,
-  onClose,
-  onDeleteAllocation,
-  onAddSchedule,
-}) {
-  if (!faculty) return null;
-
-  return (
-    <Modal
-      isOpen={isOpen}
-      onClose={onClose}
-      title="Faculty Schedule Details"
-      size="xl"
-    >
-      <div className="space-y-6">
-        <div className="flex items-center justify-between p-5 bg-slate-50 rounded-2xl border border-slate-100">
-          <div className="flex items-center gap-4">
-            <Avatar
-              name={faculty.teacher_name?.split(" ")[0] ?? ""}
-              surname={
-                faculty.teacher_name?.split(" ").slice(1).join(" ") ?? ""
-              }
-              size="lg"
-            />
-            <div>
-              <h2 className="text-lg font-bold text-slate-900 leading-tight">
-                {faculty.teacher_name}
-              </h2>
-              <p className="text-sm text-slate-500">{faculty.teacher_email}</p>
-            </div>
-          </div>
-          <Button size="sm" onClick={() => onAddSchedule(faculty)}>
-            <Plus size={14} />
-            Assign Module
-          </Button>
-        </div>
-
-        <div className="space-y-3">
-          <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-2 px-1">
-            Active Course Modules
-          </h3>
-
-          <div className="grid gap-3">
-            {faculty.allocations.map((alloc) => (
-              <div
-                key={alloc.id_allocation}
-                className="group flex items-center justify-between p-4 bg-white border border-slate-200 rounded-xl hover:border-primary-200 transition-all hover:shadow-soft"
-              >
-                <div className="flex gap-4 items-center">
-                  <div className="w-10 h-10 bg-violet-50 rounded-xl flex items-center justify-center text-violet-600">
-                    <BookOpen size={18} />
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <p className="text-sm font-semibold text-slate-900">
-                        {alloc.course_name}
-                      </p>
-                      <Badge
-                        variant={
-                          alloc.allocation_status === 1 ? "active" : "pending"
-                        }
-                        dot
-                      >
-                        {alloc.allocation_status_label}
-                      </Badge>
-                    </div>
-                    <div className="flex items-center gap-4 mt-1 text-[11px] text-slate-500">
-                      <span className="flex items-center gap-1 uppercase font-bold text-[10px] text-slate-400">
-                        <Calendar size={10} /> {alloc.week_day} · {alloc.shift}
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <MapPin size={10} /> {alloc.room_name}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                <button
-                  onClick={() => onDeleteAllocation(alloc)}
-                  className="p-2 opacity-0 group-hover:opacity-100 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
-                  title="Remove allocation"
-                >
-                  <Trash2 size={16} />
-                </button>
-              </div>
-            ))}
-
-            {faculty.allocations.length === 0 && (
-              <div className="text-center py-12 bg-slate-50 rounded-2xl border border-dashed border-slate-200">
-                <p className="text-sm text-slate-400">
-                  No active assignments for this professor.
-                </p>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-    </Modal>
-  );
-}
+// ── Stat card icon mapping ──────────────────────────────────────────────────────
+const STAT_CONFIG = [
+  {
+    key: "totalProfessors",
+    label: "Total Professors",
+    color: "text-primary-600",
+    bg: "bg-primary-50",
+    icon: Users,
+  },
+  {
+    key: "activeModules",
+    label: "Active Modules",
+    color: "text-violet-600",
+    bg: "bg-violet-50",
+    icon: BookOpen,
+  },
+  {
+    key: "confirmed",
+    label: "Confirmed",
+    color: "text-emerald-600",
+    bg: "bg-emerald-50",
+    icon: UserCheck,
+  },
+];
 
 // ── Main Page ──────────────────────────────────────────────────────────────────
 export default function SchedulesPage() {
   const { profile } = useAuth();
   const isAdmin = !profile || profile.user_type === "admin";
 
-  // State
-  const [allocations, setAllocations] = useState([]);
-  const [loading, setLoading] = useState(true);
+  // UI-only state
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [viewMode, setViewMode] = useState("list");
@@ -218,94 +146,22 @@ export default function SchedulesPage() {
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [deleting, setDeleting] = useState(false);
 
-  // ── Data Processing ────────────────────────────────────────────────────────
-  const grouping = useMemo(() => {
-    const map = new Map();
-    allocations.forEach((row) => {
-      const id = row.id_profile;
-      if (!map.has(id)) {
-        map.set(id, {
-          id_profile: id,
-          teacher_name: row.teacher_name,
-          teacher_email: row.teacher_email,
-          allocations: [],
-        });
-      }
-      map.get(id).allocations.push(row);
-    });
-    return Array.from(map.values());
-  }, [allocations]);
-
-  const filtered = useMemo(() => {
-    return grouping.filter((fac) => {
-      const q = search.toLowerCase();
-      const matchSearch =
-        !q ||
-        fac.teacher_name?.toLowerCase().includes(q) ||
-        fac.teacher_email?.toLowerCase().includes(q);
-      const matchStatus =
-        statusFilter === "all" ||
-        fac.allocations.some(
-          (a) => String(a.allocation_status) === statusFilter,
-        );
-      return matchSearch && matchStatus;
-    });
-  }, [grouping, search, statusFilter]);
-
-  // ── Stats ──────────────────────────────────────────────────────────────────
-  const stats = [
-    {
-      label: "Total Professors",
-      value: grouping.length,
-      color: "text-primary-600",
-      bg: "bg-primary-50",
-      icon: Users,
-    },
-    {
-      label: "Active Modules",
-      value: allocations.length,
-      color: "text-violet-600",
-      bg: "bg-violet-50",
-      icon: BookOpen,
-    },
-    {
-      label: "Confirmed",
-      value: allocations.filter((a) => a.allocation_status === 1).length,
-      color: "text-emerald-600",
-      bg: "bg-emerald-50",
-      icon: UserCheck,
-    },
-  ];
+  // ── Data via custom hook (SRP) ────────────────────────────────────────────
+  const {
+    loading,
+    filtered,
+    stats,
+    fetchAllocations,
+    removeAllocation,
+  } = useFacultyAllocations(profile, search, statusFilter);
 
   // ── Handlers ────────────────────────────────────────────────────────────────
-  const loadAllocations = useCallback(async () => {
-    setLoading(true);
-    try {
-      const filters =
-        profile?.user_type === "teacher"
-          ? { id_profile: profile.id_profile }
-          : {};
-      const data = await getAllocations(filters);
-      setAllocations(data);
-    } catch (err) {
-      console.error("[SchedulesPage] load error:", err);
-    } finally {
-      setLoading(false);
-    }
-  }, [profile]);
-
-  useEffect(() => {
-    loadAllocations();
-  }, [loadAllocations]);
-
-  const handleDelete = async () => {
+  const handleDelete = useCallback(async () => {
     if (!deleteTarget) return;
     setDeleting(true);
     try {
-      await deleteAllocation(deleteTarget.id_allocation);
-      setAllocations((prev) =>
-        prev.filter((r) => r.id_allocation !== deleteTarget.id_allocation),
-      );
+      await removeAllocation(deleteTarget.id_allocation);
+      // Also update the selected faculty's view if the detail modal is open
       if (selectedFaculty) {
         setSelectedFaculty((prev) => ({
           ...prev,
@@ -320,7 +176,7 @@ export default function SchedulesPage() {
     } finally {
       setDeleting(false);
     }
-  };
+  }, [deleteTarget, selectedFaculty, removeAllocation]);
 
   const onViewDetails = (fac) => {
     setSelectedFaculty(fac);
@@ -332,6 +188,12 @@ export default function SchedulesPage() {
   };
 
   const columns = buildColumns(onViewDetails, onAddSchedule);
+
+  // ── Stat cards driven by config ───────────────────────────────────────────
+  const statCards = STAT_CONFIG.map((s) => ({
+    ...s,
+    value: stats[s.key],
+  }));
 
   const renderCard = (fac) => (
     <div
@@ -403,7 +265,7 @@ export default function SchedulesPage() {
       <main className="flex-1 overflow-y-auto p-6 animate-fade-in space-y-6">
         {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {stats.map((s) => (
+          {statCards.map((s) => (
             <div
               key={s.label}
               className="bg-white rounded-2xl border border-slate-100 shadow-soft p-5 flex items-center gap-4"
@@ -423,7 +285,7 @@ export default function SchedulesPage() {
           ))}
         </div>
 
-        {/* Filters */}
+        {/* Filters — OCP: filter options from centralised config */}
         <div className="bg-white rounded-2xl border border-slate-200 shadow-soft px-4 py-3 flex flex-wrap items-center justify-between gap-4">
           <div className="flex flex-1 items-center gap-3 min-w-[300px]">
             <div className="relative flex-1">
@@ -449,9 +311,11 @@ export default function SchedulesPage() {
                 onChange={(e) => setStatusFilter(e.target.value)}
                 className="sc-input pl-8 h-10 min-w-[140px]"
               >
-                <option value="all">Any Status</option>
-                <option value="1">Confirmed</option>
-                <option value="2">Tentative</option>
+                {ALLOCATION_STATUS_FILTERS.map((opt) => (
+                  <option key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </option>
+                ))}
               </select>
             </div>
           </div>
@@ -481,14 +345,17 @@ export default function SchedulesPage() {
         )}
       </main>
 
+      {/* ISP: lean props instead of monolithic faculty object */}
       <FacultyDetailModal
         isOpen={detailOpen}
         onClose={() => setDetailOpen(false)}
-        faculty={selectedFaculty}
+        teacherName={selectedFaculty?.teacher_name}
+        teacherEmail={selectedFaculty?.teacher_email}
+        allocations={selectedFaculty?.allocations ?? []}
         onDeleteAllocation={(alloc) => setDeleteTarget(alloc)}
-        onAddSchedule={(fac) => {
+        onAddSchedule={() => {
           setDetailOpen(false);
-          onAddSchedule(fac);
+          onAddSchedule(selectedFaculty);
         }}
       />
 
@@ -496,10 +363,10 @@ export default function SchedulesPage() {
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}
         initialFacultyId={selectedFaculty?.id_profile}
-        onSaved={loadAllocations}
+        onSaved={fetchAllocations}
       />
 
-      {/* Delete Modals */}
+      {/* Delete confirmation modal */}
       {deleteTarget && (
         <div className="fixed inset-0 z-100 flex items-center justify-center p-4">
           <div

@@ -6,6 +6,10 @@ import Modal from "@/components/ui/Modal";
 import Input from "@/components/ui/Input";
 import Select from "@/components/ui/Select";
 import Button from "@/components/ui/Button";
+import {
+  STATUS_OPTIONS,
+  RELATION_OPTIONS,
+} from "@/lib/config/constants";
 
 export default function CourseFormModal({
   isOpen,
@@ -17,6 +21,8 @@ export default function CourseFormModal({
   selectedPrograms = [],
   selectedRelatedCourses = [],
   initialMode = "create",
+  statusOptions = STATUS_OPTIONS,
+  relationOptions = RELATION_OPTIONS,
 }) {
   const [mode, setMode] = useState(initialMode);
   const [form, setForm] = useState({
@@ -141,10 +147,7 @@ export default function CourseFormModal({
           id="courseStatus"
           value={form.id_status}
           onChange={(e) => update("id_status", Number(e.target.value))}
-          options={[
-            { value: 1, label: "Active" },
-            { value: 2, label: "Inactive" },
-          ]}
+          options={statusOptions}
           disabled={mode === "view"}
         />
 
@@ -312,10 +315,7 @@ export default function CourseFormModal({
                   onChange={(e) =>
                     setNewReq((prev) => ({ ...prev, relation: e.target.value }))
                   }
-                  options={[
-                    { value: "requisite", label: "Requisite" },
-                    { value: "correquisite", label: "Correquisite" },
-                  ]}
+                  options={relationOptions}
                 />
                 <Button
                   type="button"

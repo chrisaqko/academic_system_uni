@@ -18,15 +18,7 @@ import ViewToggle from "@/components/ui/ViewToggle";
 import Badge from "@/components/ui/Badge";
 import Button from "@/components/ui/Button";
 import CourseFormModal from "@/components/modules/CourseFormModal";
-import {
-  getCourses,
-  getProgramOptions,
-  getCoursesByProgram,
-  upsertCourse,
-  updateCoursePrograms,
-  getRelatedCourses,
-  updateRelatedCourses,
-} from "@/lib/supabase/queries";
+import { CourseService } from "@/lib/services/CourseService";
 import { statusLabel } from "@/lib/utils";
 
 const EMPTY_ARRAY = [];
@@ -48,10 +40,10 @@ export default function CoursesPage() {
 
   useEffect(() => {
     Promise.all([
-      getCourses(),
-      getProgramOptions(),
-      getCoursesByProgram(),
-      getRelatedCourses(),
+      CourseService.getAll(),
+      CourseService.getProgramOptions(),
+      CourseService.getCoursesByProgram(),
+      CourseService.getRelatedCourses(),
     ]).then(([coursesData, programsData, coursesProgramData, relatedCoursesData]) => {
       setCourses(coursesData);
       setPrograms(programsData);
@@ -91,7 +83,7 @@ export default function CoursesPage() {
     const newStatus = course.id_status === 1 ? 2 : 1;
     setLoading(true);
     try {
-      const updated = await upsertCourse({ ...course, id_status: newStatus });
+      const updated = await CourseService.upsert({ ...course, id_status: newStatus });
       setCourses((prev) =>
         prev.map((p) => (p.id_course === updated.id_course ? updated : p)),
       );
@@ -401,21 +393,21 @@ export default function CoursesPage() {
             if (editCourse) {
               const payload = { ...editCourse, ...c };
               delete payload.courses_program;
-              updatedCourse = await upsertCourse(payload);
+              updatedCourse = await CourseService.upsert(payload);
               setCourses((prev) =>
                 prev.map((p) =>
                   p.id_course === editCourse.id_course ? updatedCourse : p,
                 ),
               );
             } else {
-              updatedCourse = await upsertCourse(c);
+              updatedCourse = await CourseService.upsert(c);
               setCourses((prev) => [...prev, updatedCourse]);
             }
 
-            await updateCoursePrograms(updatedCourse.id_course, selectedProgramIds);
-            await updateRelatedCourses(updatedCourse.id_course, relatedSelection);
+            await CourseService.updatePrograms(updatedCourse.id_course, selectedProgramIds);
+            await CourseService.updateRelatedCourses(updatedCourse.id_course, relatedSelection);
 
-            const cp = await getCoursesByProgram();
+            const cp = await CourseService.getCoursesByProgram();
             const cpMap = {};
             cp.forEach((link) => {
               if (!cpMap[link.id_course]) cpMap[link.id_course] = [];
@@ -423,7 +415,7 @@ export default function CoursesPage() {
             });
             setCourseProgramsMap(cpMap);
 
-            const rc = await getRelatedCourses();
+            const rc = await CourseService.getRelatedCourses();
             const rcMap = {};
             rc.forEach((relation) => {
               if (!rcMap[relation.id_course]) rcMap[relation.id_course] = [];

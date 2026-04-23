@@ -12,14 +12,8 @@ import {
 } from "lucide-react";
 import Modal from "@/components/ui/Modal";
 import Button from "@/components/ui/Button";
-import {
-  getFacultyOptions,
-  getCourses,
-  getScheduleOptions,
-  getClassrooms,
-  getStatusOptions,
-  createAllocation,
-} from "@/lib/supabase/queries";
+import { ScheduleService } from "@/lib/services/ScheduleService";
+import { AllocationService } from "@/lib/services/AllocationService";
 
 const EMPTY = {
   id_profile: "",
@@ -56,11 +50,11 @@ export default function AssignFacultyModal({
     setOptsLoading(true);
 
     Promise.all([
-      getFacultyOptions(),
-      getCourses(),
-      getScheduleOptions(),
-      getClassrooms(),
-      getStatusOptions(),
+      ScheduleService.getFacultyOptions(),
+      ScheduleService.getCourses(),
+      ScheduleService.getScheduleOptions(),
+      ScheduleService.getClassrooms(),
+      ScheduleService.getStatusOptions(),
     ])
       .then(([f, c, s, r, st]) => {
         setFaculty(f);
@@ -101,7 +95,7 @@ export default function AssignFacultyModal({
     setSaving(true);
     setError(null);
     try {
-      await createAllocation({
+      await AllocationService.create({
         id_profile: form.id_profile,
         id_course: form.id_course,
         id_schedule: form.id_schedule,
