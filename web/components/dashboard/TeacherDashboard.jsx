@@ -1,169 +1,168 @@
 "use client";
 
-import Image from "next/image";
-import { Download, AlertTriangle, Mail, Users } from "lucide-react";
-import ScheduleGrid from "@/components/dashboard/ScheduleGrid";
-import { buildTeacherSchedule } from "@/lib/supabase/queries";
-
-const TEACHER_COURSES = [
-  { id: 1, name: "History of Modernism",       level: "Undergraduate", students: 45, img: "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=400&h=200&fit=crop" },
-  { id: 8, name: "Senior Design Studio II",    level: "Postgraduate",  students: 12, img: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=400&h=200&fit=crop" },
-  { id: 9, name: "Sustainable Materials Lab",  level: "Professional",  students: 18, img: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=200&fit=crop" },
-];
-
-const levelColors = {
-  Undergraduate: "bg-primary-700/80",
-  Postgraduate:  "bg-violet-800/80",
-  Professional:  "bg-slate-700/80",
-};
+import { useEffect, useState, useMemo } from "react";
+import ScheduleGrid from "@/components/ui/ScheduleGrid";
+import { AllocationService } from "@/lib/services/AllocationService";
+import { Users, BookOpen, Clock, CheckSquare } from "lucide-react";
+import Badge from "@/components/ui/Badge";
+import Button from "@/components/ui/Button";
 
 export default function TeacherDashboard({ profile }) {
-  // buildTeacherSchedule is synchronous — compute at render time
-  const scheduleEntries = buildTeacherSchedule(profile?.id_profile ?? null);
+  const [allocations, setAllocations] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!profile?.id_profile) return;
+
+    async function loadAllocations() {
+      setLoading(true);
+      try {
+        const data = await AllocationService.getAll({ id_profile: profile.id_profile });
+        setAllocations(data || []);
+      } catch (err) {
+        console.error("Failed to load teacher allocations:", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadAllocations();
+  }, [profile?.id_profile]);
+
+  // Map to the format required by the new ScheduleGrid
+  const scheduleData = useMemo(() => {
+    return allocations.map(alloc => ({
+      week_day: alloc.week_day,
+      shift: alloc.shift,
+      course_name: alloc.course_name,
+      room: alloc.room_name,
+      professor: alloc.teacher_name,
+      status: alloc.allocation_status === 1 ? 'active' : 'inactive',
+      is_lab: alloc.course_name?.toLowerCase().includes("lab")
+    }));
+  }, [allocations]);
+
+  // Group unique courses for the Assigned Courses view
+  const uniqueCourses = useMemo(() => {
+    const courses = new Map();
+    allocations.forEach(alloc => {
+      if (!alloc.id_course) return;
+      if (!courses.has(alloc.id_course)) {
+        courses.set(alloc.id_course, {
+          id_course: alloc.id_course,
+          course_name: alloc.course_name,
+          course_credits: alloc.course_credits,
+          sessions: [],
+          status: alloc.allocation_status === 1 ? 'active' : 'inactive'
+        });
+      }
+      courses.get(alloc.id_course).sessions.push(alloc);
+    });
+    return Array.from(courses.values());
+  }, [allocations]);
 
   return (
-    <div className="p-6 space-y-6 animate-fade-in">
-      {/* Header */}
+    <div className="p-6 space-y-8 animate-fade-in">
       <div className="flex items-start justify-between">
         <div>
           <h1 className="text-2xl font-bold text-slate-900">
             Faculty Overview
           </h1>
           <p className="text-sm text-slate-400 mt-0.5">
-            Academic Quarter: Fall 2024 • Week 08
+            {profile?.name} {profile?.surname} · Faculty view
           </p>
         </div>
-        <button className="flex items-center gap-1.5 px-3.5 py-2 text-xs font-medium rounded-lg border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 shadow-soft transition-colors">
-          <Download size={13} />
-          Download Roster
-        </button>
       </div>
 
-      {/* Main layout: schedule + sidebar */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-        {/* Schedule grid */}
-        <div className="lg:col-span-2">
-          <ScheduleGrid
-            entries={scheduleEntries}
-            title="Weekly Teaching Schedule"
-          />
+      {/* Schedule Grid Section */}
+      <section className="space-y-4">
+        <h2 className="text-base font-semibold text-slate-900">Weekly Teaching Schedule</h2>
+        <div className="bg-white rounded-2xl shadow-soft">
+          {loading ? (
+            <div className="p-12 text-center text-slate-400">Loading schedule...</div>
+          ) : (
+            <ScheduleGrid schedules={scheduleData} />
+          )}
         </div>
+      </section>
 
-        {/* Current class panel */}
-        <div className="space-y-4">
-          <div className="bg-white border border-slate-200 rounded-xl shadow-soft p-5">
-            <h3 className="text-sm font-semibold text-slate-900 mb-3">
-              Current Class
-            </h3>
-            <p className="text-xs text-primary-600 font-semibold mb-4">
-              ARCH 101 - Lecture Theatre 02
-            </p>
-
-            <div className="bg-slate-50 rounded-lg p-4 mb-4">
-              <div className="flex items-center gap-2 mb-1">
-                <Users size={16} className="text-slate-400" />
-                <span className="text-2xl font-bold text-slate-900">
-                  42 / 45
-                </span>
-              </div>
-              <p className="text-xs text-slate-400">Students Present</p>
-            </div>
-
-            <div className="flex justify-between items-center py-2 border-t border-slate-100">
-              <span className="text-xs text-slate-500 font-medium">
-                Session Time Remaining
-              </span>
-              <span className="text-sm font-bold text-slate-900">14:00</span>
-            </div>
-
-            <div className="mt-4 pt-3 border-t border-slate-100">
-              <p className="sc-label mb-3">Quick Insights</p>
-              <div className="space-y-2">
-                <div className="flex items-center justify-between py-2 px-3 bg-amber-50 border border-amber-100 rounded-lg">
-                  <div className="flex items-center gap-2">
-                    <AlertTriangle size={13} className="text-amber-500" />
-                    <span className="text-xs font-medium text-amber-700">
-                      3 Unmarked Assignments
-                    </span>
-                  </div>
-                  <span className="text-slate-300 text-xs">›</span>
-                </div>
-                <div className="flex items-center justify-between py-2 px-3 bg-slate-50 border border-slate-100 rounded-lg">
-                  <div className="flex items-center gap-2">
-                    <Mail size={13} className="text-slate-500" />
-                    <span className="text-xs font-medium text-slate-700">
-                      12 New Messages
-                    </span>
-                  </div>
-                  <span className="text-slate-300 text-xs">›</span>
-                </div>
-              </div>
-            </div>
+      {/* Assigned Courses Section */}
+      <section className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h2 className="text-base font-semibold text-slate-900">Assigned Courses</h2>
+        </div>
+        
+        {loading ? (
+          <div className="p-12 text-center text-slate-400">Loading courses...</div>
+        ) : uniqueCourses.length === 0 ? (
+          <div className="bg-white border border-dashed border-slate-300 rounded-xl flex flex-col items-center justify-center gap-2 py-12">
+            <BookOpen size={28} className="text-slate-300" />
+            <p className="text-sm font-semibold text-slate-500">No courses assigned</p>
+            <p className="text-xs text-slate-400">You will see your active courses here</p>
           </div>
-        </div>
-      </div>
-
-      {/* Active courses */}
-      <div>
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-base font-semibold text-slate-900">
-            Active Courses & Enrollment
-          </h3>
-          <button className="text-xs text-primary-600 font-medium hover:underline">
-            View All Programs
-          </button>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {TEACHER_COURSES.map((course) => (
-            <div
-              key={course.id}
-              className="bg-white border border-slate-200 rounded-xl shadow-soft overflow-hidden hover:shadow-card hover:border-slate-300 transition-all duration-200 cursor-pointer"
-            >
-              <div className="relative h-36">
-                <Image
-                  src={course.img}
-                  alt={course.name}
-                  width={400}
-                  height={200}
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute inset-0 bg-linear-to-t from-slate-900/60 to-transparent" />
-                <span
-                  className={`absolute top-3 left-3 px-2 py-0.5 text-[10px] font-bold text-white rounded uppercase tracking-wider ${levelColors[course.level] || "bg-slate-700/80"}`}
-                >
-                  {course.level}
-                </span>
-              </div>
-              <div className="p-4">
-                <h4 className="text-sm font-semibold text-slate-900 mb-3">
-                  {course.name}
-                </h4>
-                <div className="flex items-center justify-between">
-                  <div className="flex -space-x-2">
-                    {["#6366f1", "#10b981", "#f59e0b"].map((c, i) => (
-                      <div
-                        key={i}
-                        className="w-6 h-6 rounded-full border-2 border-white flex items-center justify-center text-[10px] text-white font-bold"
-                        style={{ backgroundColor: c }}
-                      >
-                        {["A", "B", "C"][i]}
-                      </div>
-                    ))}
-                    {course.students > 3 && (
-                      <div className="w-6 h-6 rounded-full bg-slate-200 border-2 border-white flex items-center justify-center text-[9px] text-slate-600 font-bold">
-                        +{course.students - 3}
-                      </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            {uniqueCourses.map((course) => (
+              <div
+                key={course.id_course}
+                className="bg-white border border-slate-200 rounded-xl shadow-soft overflow-hidden hover:shadow-card hover:border-slate-300 transition-all duration-200 flex flex-col"
+              >
+                <div className="p-5 border-b border-slate-100">
+                  <div className="flex justify-between items-start mb-2">
+                    <Badge variant={course.status === "active" ? "active" : "neutral"} dot>
+                      {course.status === "active" ? "Active" : "Pending"}
+                    </Badge>
+                    {course.course_credits && (
+                      <span className="text-[10px] font-bold bg-slate-100 text-slate-500 px-2 py-0.5 rounded">
+                        {course.course_credits} CR
+                      </span>
                     )}
                   </div>
-                  <span className="text-xs text-slate-500 font-medium">
-                    {course.students} Students
-                  </span>
+                  <h3 className="text-sm font-bold text-slate-900 mb-1 leading-snug">
+                    {course.course_name}
+                  </h3>
+                  <p className="text-xs text-slate-500 flex items-center gap-1.5 mt-2">
+                    <Users size={12} className="text-slate-400" /> 
+                    {/* Placeholder for actual student count since it's not in the allocation query yet */}
+                    Estimated 30 Students
+                  </p>
+                </div>
+                
+                <div className="p-4 bg-slate-50 flex-1">
+                  <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">
+                    Weekly Sessions
+                  </h4>
+                  <div className="space-y-2">
+                    {course.sessions.map((session, i) => (
+                      <div key={i} className="flex items-center justify-between text-xs">
+                        <span className="flex items-center gap-1.5 font-medium text-slate-700">
+                          <Clock size={12} className="text-primary-500" />
+                          {session.week_day}
+                        </span>
+                        <span className="text-slate-500">
+                          {session.shift} · {session.room_name}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="p-4 border-t border-slate-100 mt-auto bg-white">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="w-full flex items-center justify-center gap-1.5"
+                    onClick={() => alert("Grade entry system coming soon!")}
+                  >
+                    <CheckSquare size={14} />
+                    Manage Grades
+                  </Button>
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
-      </div>
+            ))}
+          </div>
+        )}
+      </section>
     </div>
   );
 }
